@@ -787,7 +787,7 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 		}
 
 		char outdir[MAX_PATH];
-		if (paths.size() >= 1)
+		if (paths.size() > 1)
 		{
 			GetFullPathName(paths[1].c_str(), MAX_PATH, outdir, NULL);
 		}

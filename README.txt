@@ -1,14 +1,12 @@
-         Havok Command Line Tools 1.0
+         Havok Command Line Tools 1.1
         =============================
 
-    This packages includes an command line application for
-      converting Havok models from Skyrim the native format
-      to something that can be manipulated or used as a reference 
-      for non-derivative works.
+This package includes a command line application for converting Havok models 
+from Skyrim the native format to something that can be manipulated or used as 
+a reference for non-derivative works.
       
-    Currently the package only converts from native HKX files built
-      with Havok 2010.2.0 SDK to the XML form of HKX or to the 
-      Gamebryo KF file format.
+Currently the package only converts from native HKX files built with 
+Havok 2010.2.0 SDK to the XML form of HKX or to the Gamebryo KF file format.
 
    
 Prerequisites:
@@ -82,12 +80,12 @@ Troubleshooting:
   - I keep getting the following message "Wrong platform for packfile" when using the Preview tool
   
     * You are loading the original animations from Bethesda which are not directly 
-      compatible with the preview tool.  Follow the tuturial parts 1 and 2 and 
+      compatible with the preview tool.  Follow the tutorial parts 1 and 2 and 
       export the XML HKX files and use those.
     
   - The animation is corrupt after importing into 3ds Max
     * Try Importing the Skeleton.NIF file explicitly before importing the mesh.
-    * Some animations just dont import correctly probably because of bone mapping issues
+    * Some animations just don't import correctly probably because of bone mapping issues
 
   - When I try to load the converted HKX file into Havok Preview Tool fails.
     * The Havok Preview Tool breaks with large files like the dragon.hkx files.
@@ -114,7 +112,7 @@ Source Code:
     - git://github.org/figment/hkxcmd.git
     - git://github.org/figment/niflib.git
   
-Aknowledgements:
+Acknowledgements:
   * Niftools team for niflib and the 3ds Max Importer
   * Havok and Intel for the Havok SDK and perpetual license for 3rd party tools
   
