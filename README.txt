@@ -1,4 +1,4 @@
-         Havok Command Line Tools 1.1
+         Havok Command Line Tools 1.2
         =============================
 
 This package includes a command line application for converting Havok models 
@@ -106,6 +106,10 @@ Known Issues:
     and this was the easiest way to do this porting.  It may be worth while
     converting to FBX format instead but that is much more work but
     would presumably have broader support.
+
+Change Log:
+  * Fixed crash when no output folder was specified when using the exportkf command (1.1)
+  * Redid the directory handling for exportkf (1.2)
 
 Source Code:
   * Source is hosted at github.org

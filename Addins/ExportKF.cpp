@@ -4,6 +4,10 @@
 #include "hkxutils.h"
 #include "log.h"
 
+#include <direct.h>
+#include <stdlib.h>
+#include <stdio.h>
+
 #pragma region Niflib Headers
 //////////////////////////////////////////////////////////////////////////
 // Niflib Includes
@@ -167,8 +171,8 @@ static hkResource* hkSerializeUtilLoad( hkStreamReader* stream
 	}
 	__except (EXCEPTION_EXECUTE_HANDLER)
 	{
-		if (detailsOut == NULL)
-			detailsOut->id = hkSerializeUtil::ErrorDetails::ERRORID_LOAD_FAILED;
+		//if (detailsOut == NULL)
+		//	detailsOut->id = hkSerializeUtil::ErrorDetails::ERRORID_LOAD_FAILED;
 		return NULL;
 	}
 }
@@ -461,12 +465,14 @@ bool AnimationExport::exportController()
 }
 
 
-void ExportAnimations(const string& rootdir, const string& skelfile, const vector<string>& animlist, const string& outdir, Niflib::NifInfo& nifver)
+void ExportAnimations(const string& rootdir, const string& skelfile, const vector<string>& animlist, const string& outdir, Niflib::NifInfo& nifver, bool norelativepath = false)
 {
 	hkResource* skelResource = NULL;
 	hkResource* animResource = NULL;
 	hkaSkeleton* skeleton = NULL;
 	hkaAnimationContainer * animCont= NULL;
+
+	Log::Verbose("ExportAnimation('%s','%s','%s')", rootdir.c_str(), skelfile.c_str(), outdir.c_str());
 	// Read back a serialized file
 	{
 		hkIstream stream(skelfile.c_str());
@@ -490,14 +496,37 @@ void ExportAnimations(const string& rootdir, const string& skelfile, const vecto
 		for (vector<string>::const_iterator itr = animlist.begin(); itr != animlist.end(); ++itr)
 		{
 			string animfile = (*itr);
+			Log::Verbose("ExportAnimation Starting '%s'", animfile.c_str());
 
-			char relpath[MAX_PATH], outfile[MAX_PATH], relout[MAX_PATH];
-			PathRelativePathTo(relpath, rootdir.c_str(), FILE_ATTRIBUTE_DIRECTORY, animfile.c_str(), 0);
-			PathCombine(outfile, outdir.c_str(), relpath);
-			GetFullPathName(outfile, MAX_PATH, outfile, NULL);
-			PathRemoveExtension(outfile);
-			PathAddExtension(outfile, ".kf");
-			PathRelativePathTo(relout, outdir.c_str(), FILE_ATTRIBUTE_DIRECTORY, outfile, 0);
+
+			char outfile[MAX_PATH], relout[MAX_PATH];
+			LPCSTR extn = PathFindExtension(outdir.c_str());
+			if (stricmp(extn, ".kf") == 0)
+			{
+				strcpy(outfile, outdir.c_str());
+			}
+			else // assume its a folder
+			{
+				if (norelativepath)
+				{
+					PathCombine(outfile, outdir.c_str(), PathFindFileName(animfile.c_str()));
+				}
+				else
+				{
+					char relpath[MAX_PATH];
+					PathRelativePathTo(relpath, rootdir.c_str(), FILE_ATTRIBUTE_DIRECTORY, animfile.c_str(), 0);
+					PathCombine(outfile, outdir.c_str(), relpath);
+					GetFullPathName(outfile, MAX_PATH, outfile, NULL);
+				}				
+				PathRemoveExtension(outfile);
+				PathAddExtension(outfile, ".kf");
+			}
+			char workdir[MAX_PATH];
+			_getcwd(workdir, MAX_PATH);
+			PathRelativePathTo(relout, workdir, FILE_ATTRIBUTE_DIRECTORY, outfile, 0);
+
+			Log::Verbose("ExportAnimation Reading '%s'", animfile.c_str());
+
 
 			hkIstream stream(animfile.c_str());
 			hkStreamReader *reader = stream.getStreamReader();
@@ -534,9 +563,16 @@ void ExportAnimations(const string& rootdir, const string& skelfile, const vecto
 							NiControllerSequenceRef seq = new NiControllerSequence();
 							seq->SetName(fname);
 
+							Log::Verbose("ExportAnimation Exporting '%s'", outfile);
+
 							AnimationExport exporter(seq, skeleton, binding);
 							if ( exporter.doExport() )
 							{
+								char outfiledir[MAX_PATH];
+								strcpy(outfiledir, outfile);
+								PathRemoveFileSpec(outfiledir);
+								CreateDirectories(outfiledir);
+
 								Log::Info("Exporting '%s'", relout);
 								Niflib::WriteNifTree(outfile, seq, nifver);
 							}
@@ -589,6 +625,7 @@ static void HelpString(hkxcmd::HelpType type){
 			Log::Info("  anim.kf       Path to Gamebryo animation to write (Default: anim.hkx with kf ext)" );
 			Log::Info("<Switches>" );
 			Log::Info(" -d[:level]     Debug Level: ERROR,WARN,INFO,DEBUG,VERBOSE (Default: INFO)" );
+			Log::Info(" -n             Disable recursive file processing" );
 			Log::Info(" -v x.x.x.x     Nif Version to write as - Defaults to 20.2.0.7" );
 			Log::Info(" -u x           Nif User Version to write as - Defaults to 12" );
 			Log::Info(" -u2 x          Nif User2 Version to write as - Defaults to 83" );
@@ -598,17 +635,31 @@ static void HelpString(hkxcmd::HelpType type){
 	}
 }
 
-static void ExportProject( const string &projfile, char * rootPath, char * outdir, Niflib::NifInfo& nifver )
+static void ExportProject( const string &projfile, const char * rootPath, const char * outdir, Niflib::NifInfo& nifver, bool recursion)
 {
 	vector<string> skelfiles, animfiles;
 	char projpath[MAX_PATH], skelpath[MAX_PATH], animpath[MAX_PATH];
-	GetFullPathName(projfile.c_str(), MAX_PATH, projpath, NULL);
-	PathRemoveFileSpec(projpath);
-	PathAddBackslash(projpath);
-	PathCombine(skelpath, projpath, "character assets\\*skeleton.hkx");
-	FindFiles(skelfiles, skelpath);
-	PathCombine(animpath, projpath, "animations\\*.hkx");
-	FindFiles(animfiles, animpath);
+
+	if ( wildmatch("*skeleton.hkx", projfile) )
+	{
+		skelfiles.push_back(projfile);
+
+		GetFullPathName(projfile.c_str(), MAX_PATH, projpath, NULL);
+		PathRemoveFileSpec(projpath);
+		PathAddBackslash(projpath);
+		PathCombine(animpath, projpath, "..\\animations\\*.hkx");
+		FindFiles(animfiles, animpath, recursion);	
+	}
+	else
+	{
+		GetFullPathName(projfile.c_str(), MAX_PATH, projpath, NULL);
+		PathRemoveFileSpec(projpath);
+		PathAddBackslash(projpath);
+		PathCombine(skelpath, projpath, "character assets\\*skeleton.hkx");
+		FindFiles(skelfiles, skelpath, recursion);
+		PathCombine(animpath, projpath, "animations\\*.hkx");
+		FindFiles(animfiles, animpath, recursion);
+	}
 	if (skelfiles.empty())
 	{
 		Log::Warn("No skeletons found. Skipping '%s'", projpath);
@@ -623,7 +674,7 @@ static void ExportProject( const string &projfile, char * rootPath, char * outdi
 	}
 	else
 	{
-		ExportAnimations(string(rootPath), skelfiles[0],animfiles, outdir, nifver);
+		ExportAnimations(string(rootPath), skelfiles[0],animfiles, outdir, nifver, false);
 	}
 }
 
@@ -635,6 +686,7 @@ static void HK_CALL errorReport(const char* msg, void* userContext)
 
 static bool ExecuteCmd(hkxcmdLine &cmdLine)
 {
+	bool recursion = true;
 	vector<string> paths;
 	int argc = cmdLine.argc;
 	char **argv = cmdLine.argv;
@@ -653,6 +705,9 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 		{
 			switch (tolower(arg[1]))
 			{
+			case 'n':
+				recursion = false;
+				break;
 			case 'v':
 			 {
 				 const char *param = arg+2;
@@ -776,10 +831,24 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 		GetFullPathName(paths[0].c_str(), MAX_PATH, rootPath, NULL);
 		strcpy(searchPath, rootPath);
 		PathAddBackslash(searchPath);
-		strcat(searchPath, "*project.hkx");
+		strcat(searchPath, "*skeleton.hkx");
 
 		vector<string> files;
-		FindFiles(files, searchPath);
+		FindFiles(files, searchPath, recursion);
+		for (vector<string>::iterator itr = files.begin(); itr != files.end(); )
+		{
+			if (wildmatch("*\\skeleton.hkx", (*itr)))
+			{
+				++itr;
+			}
+			else
+			{
+				Log::Verbose("Ignoring '%s' due to inexact skeleton.hkx file match", (*itr).c_str());
+				itr = files.erase(itr);
+			}			
+		}
+
+
 		if (files.empty())
 		{
 			Log::Warn("No files found");
@@ -799,7 +868,7 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 		for (vector<string>::iterator itr = files.begin(); itr != files.end(); ++itr)
 		{
 			string projfile = (*itr).c_str();
-			ExportProject(projfile, rootPath, outdir, nifver);
+			ExportProject(projfile, rootPath, outdir, nifver, recursion);
 		}
 	}
 	else
@@ -831,56 +900,80 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 				} else { 
 					strcpy(outdir, rootPath); 
 				}
-				ExportProject(skelpath, rootPath, outdir, nifver);
+				ExportProject(skelpath, rootPath, outdir, nifver, recursion);
 			}
 		}
 		else
 		{
 			// handle specification of skeleton + animation + output
-
 			if ( !PathFileExists(skelpath.c_str()) )
 			{
 				Log::Error("Skeleton file not found at '%s'", skelpath.c_str());
 			}
 			else
 			{
+				// set relative path to current directory
 				char rootPath[MAX_PATH];
-				GetFullPathName(skelpath.c_str(), MAX_PATH, rootPath, NULL);
-				PathRemoveFileSpec(rootPath);
+				_getcwd(rootPath, MAX_PATH);
 
-				if (paths.size() < 2)
-				{
-					Log::Error("Animation path not specified");
-					HelpString(hkxcmd::htLong);
-				}
-				else if (paths.size() > 3)
+				if (paths.size() > 3)
 				{
 					Log::Error("Too many arguments specified");
 					HelpString(hkxcmd::htLong);
 				}
 				else
 				{
-					string animpath = paths[1];
-					if (PathIsDirectory(animpath.c_str()))
-						animpath += string("\\*.hkx");
-					vector<string> animfiles;
-					FindFiles(animfiles, animpath.c_str());
-
-					if (animfiles.empty())
+					bool norelativepath = true;
+					if (paths.size() == 1) // output files inplace
 					{
-						Log::Warn("No Animations found. Skipping '%s'", animpath.c_str());
+						char animDir[MAX_PATH], tempdir[MAX_PATH];
+						strcpy(tempdir, skelpath.c_str());
+						PathRemoveFileSpec(tempdir);
+						PathCombine(animDir, tempdir, "..\animations");
+						PathAddBackslash(animDir);
+						ExportProject(skelpath, rootPath, rootPath, nifver, recursion);
 					}
-					else
+					else if (paths.size() == 2) // second path will be output
 					{
+						char outdir[MAX_PATH], tempdir[MAX_PATH];
+						strcpy(outdir, paths[1].c_str());
+						strcpy(tempdir, skelpath.c_str());
+						PathRemoveFileSpec(tempdir);
+						PathAddBackslash(tempdir);
+						PathCombine(rootPath,tempdir,"..\\animations");
+						GetFullPathName(rootPath, MAX_PATH, rootPath, NULL);
+						GetFullPathName(outdir, MAX_PATH, outdir, NULL);
+						ExportProject(skelpath, rootPath, outdir, nifver, recursion);
+					}
+					else // second path is animation, third is output
+					{
+						string animpath = paths[1];
+						if (PathIsDirectory(animpath.c_str()))
+						{
+							strcpy(rootPath, animpath.c_str());
+							animpath += string("\\*.hkx");
+							norelativepath = false;
+						}
+						vector<string> animfiles;
+						FindFiles(animfiles, animpath.c_str(), recursion);
 
-						char outdir[MAX_PATH];
-						if (paths.size() >= 2){
-							GetFullPathName(paths[2].c_str(), MAX_PATH, outdir, NULL);
-						} else { 
-							strcpy(outdir, rootPath); 
+						if (animfiles.empty())
+						{
+							Log::Warn("No Animations found. Skipping '%s'", animpath.c_str());
+						}
+						else
+						{
+
+							char outdir[MAX_PATH];
+							if (paths.size() >= 2){
+								GetFullPathName(paths[2].c_str(), MAX_PATH, outdir, NULL);
+							} else { 
+								strcpy(outdir, rootPath); 
+							}
+
+							ExportAnimations(string(rootPath), skelpath, animfiles, outdir, nifver, norelativepath);
 						}
 
-						ExportAnimations(string(rootPath), skelpath, animfiles, outdir, nifver);
 					}
 				}
 			}
