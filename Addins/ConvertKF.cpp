@@ -4,6 +4,7 @@
 #include "hkxutils.h"
 #include "log.h"
 
+#include <map>
 #include <direct.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -75,15 +76,24 @@ typedef Niflib::Key<string> StringKey;
 
 // Animation
 #include <Animation/Animation/Rig/hkaSkeleton.h>
+#include <Animation/Animation/Rig/hkaPose.h>
+#include <Animation/Animation/Rig/hkaSkeletonUtils.h>
 #include <Animation/Animation/hkaAnimationContainer.h>
 #include <Animation/Animation/Mapper/hkaSkeletonMapper.h>
 #include <Animation/Animation/Playback/Control/Default/hkaDefaultAnimationControl.h>
 #include <Animation/Animation/Playback/hkaAnimatedSkeleton.h>
+#include <Animation/Animation/Animation/Deprecated/DeltaCompressed/hkaDeltaCompressedAnimation.h>
 #include <Animation/Animation/Animation/SplineCompressed/hkaSplineCompressedAnimation.h>
-#include <Animation/Animation/Rig/hkaPose.h>
+#include <Animation/Animation/Animation/Quantized/hkaQuantizedAnimation.h>
+#include <Animation/Animation/Animation/Util/hkaAdditiveAnimationUtility.h>
+#include <Animation/Animation/Playback/hkaAnimatedSkeleton.h>
+
 #include <Animation/Ragdoll/Controller/PoweredConstraint/hkaRagdollPoweredConstraintController.h>
 #include <Animation/Ragdoll/Controller/RigidBody/hkaRagdollRigidBodyController.h>
 #include <Animation/Ragdoll/Utils/hkaRagdollUtils.h>
+
+#include <Common/Serialize/Util/hkLoader.h>
+#include <Common/Serialize/Util/hkRootLevelContainer.h>
 
 // Serialize
 #include <Common/Serialize/Util/hkSerializeUtil.h>
@@ -125,7 +135,7 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////
 // Enumeration Types
 //////////////////////////////////////////////////////////////////////////
-
+namespace {
 enum {
 	IPOS_X_REF	=	0,
 	IPOS_Y_REF	=	1,
@@ -143,6 +153,14 @@ enum AccumType
 	AT_FORCE = 0x80000000,
 };
 
+enum PosRotScale
+{
+	prsPos = 0x1,
+	prsRot = 0x2,
+	prsScale = 0x4,
+	prsDefault = prsPos | prsRot | prsScale,
+};
+}
 //////////////////////////////////////////////////////////////////////////
 // Constants
 //////////////////////////////////////////////////////////////////////////
@@ -177,6 +195,45 @@ static hkResource* hkSerializeUtilLoad( hkStreamReader* stream
 	}
 }
 
+static void HelpString(hkxcmd::HelpType type){
+	switch (type)
+	{
+	case hkxcmd::htShort: Log::Info("ExportKF - Convert Havok HKX animation to Gamebryo KF animation."); break;
+	case hkxcmd::htLong:  
+		{
+			char fullName[MAX_PATH], exeName[MAX_PATH];
+			GetModuleFileName(NULL, fullName, MAX_PATH);
+			_splitpath(fullName, NULL, NULL, exeName, NULL);
+
+			Log::Info("Usage: %s ExportKF [-opts[modifiers]] [skel.hkx] [anim.kf] [anim.hkx]", exeName); 
+			Log::Info("  Convert Gamebryo KF animation to Havok HKX animation" );
+			Log::Info("  If a folder is specified then the folder will be searched for any projects and convert those." );
+			Log::Info("");
+			Log::Info("<Options>" );
+			Log::Info("  skel.hkx      Path to Havok skeleton for animation binding." );
+			Log::Info("  anim.kf       Path to Gamebryo animation to convert (Default: anim.hkx with kf ext)" );
+			Log::Info("  anim.hkx      Path to Havok animation to write" );
+			Log::Info("<Switches>" );
+			Log::Info(" -d[:level]     Debug Level: ERROR,WARN,INFO,DEBUG,VERBOSE (Default: INFO)" );
+			Log::Info("");
+			Log::Info(" -f <flags>         Havok saving flags (Defaults:  SAVE_TEXT_FORMAT|SAVE_TEXT_NUMBERS)");
+			Log::Info("     SAVE_DEFAULT           = All flags default to OFF, enable whichever are needed");
+			Log::Info("     SAVE_TEXT_FORMAT       = Use text (usually XML) format, default is binary format if available.");
+			Log::Info("     SAVE_SERIALIZE_IGNORED_MEMBERS = Write members which are usually ignored.");
+			Log::Info("     SAVE_WRITE_ATTRIBUTES  = Include extended attributes in metadata, default is to write minimum metadata.");
+			Log::Info("     SAVE_CONCISE           = Doesn't provide any extra information which would make the file easier to interpret. ");
+			Log::Info("                              E.g. additionally write hex floats as text comments.");
+			Log::Info("     SAVE_TEXT_NUMBERS      = Floating point numbers output as text, not as binary.  ");
+			Log::Info("                              Makes them easily readable/editable, but values may not be exact.");
+			Log::Info(" -n             Disable recursive file processing" );
+			Log::Info(" -v x.x.x.x     Nif Version to write as - Defaults to 20.2.0.7" );
+			Log::Info(" -u x           Nif User Version to write as - Defaults to 12" );
+			Log::Info(" -u2 x          Nif User2 Version to write as - Defaults to 83" );
+			Log::Info("");
+		}
+		break;
+	}
+}
 
 
 
@@ -184,14 +241,52 @@ static hkResource* hkSerializeUtilLoad( hkStreamReader* stream
 // Classes
 //////////////////////////////////////////////////////////////////////////
 
+namespace {
+
+vector< QuatKey > SampleQuatRotateKeys(NiInterpolatorRef interp, int npoints, float startTime, float endTime, int degree=3)
+{
+	if ( interp->IsDerivedType(NiBSplineTransformInterpolator::TYPE) )
+	{
+		NiBSplineTransformInterpolatorRef binterp = DynamicCast<NiInterpolator>(interp);
+		return binterp->SampleQuatRotateKeys(npoints, degree);
+	}
+	else
+	{
+		vector< QuatKey > qk;
+		return qk;
+	}
+}
+
+/*!
+* Retrieves the sampled scale key data between start and stop time.
+* \param npoints The number of data points to sample between start and stop time.
+* \param degree N-th order degree of polynomial used to fit the data.
+* \return A vector containing Key<Vector3> data which specify translation over time.
+*/
+vector< Vector3Key > SampleTranslateKeys(NiInterpolatorRef interp, int npoints, float startTime, float endTime, int degree=3)
+{
+	vector< Vector3Key > vk;
+	return vk;
+}
+
+/*!
+* Retrieves the sampled scale key data between start and stop time.
+* \param npoints The number of data points to sample between start and stop time.
+* \param degree N-th order degree of polynomial used to fit the data.
+* \return A vector containing Key<float> data which specify scale over time.
+*/
+vector< FloatKey > SampleScaleKeys(NiInterpolatorRef interp, int npoints, float startTime, float endTime, int degree=3)
+{
+	vector< FloatKey > sk;
+	return sk;
+}
+
 struct AnimationExport
 {
 	AnimationExport(NiControllerSequenceRef seq, hkRefPtr<hkaSkeleton> skeleton, hkRefPtr<hkaAnimationBinding> binding);
 
 	bool doExport();
-
 	bool exportNotes( );
-
 	bool exportController();
 
 	//bool SampleAnimation( INode * node, Interval &range, PosRotScale prs, NiKeyframeDataRef data );
@@ -199,11 +294,6 @@ struct AnimationExport
 	hkRefPtr<hkaAnimationBinding> binding;
 	hkRefPtr<hkaSkeleton> skeleton;
 };
-
-
-float QuatDot(const Quaternion& q, const Quaternion&p)
-{
-	return q.w*p.w + q.x*p.x + q.y*p.y + q.z*p.z;
 }
 
 AnimationExport::AnimationExport(NiControllerSequenceRef seq, hkRefPtr<hkaSkeleton> skeleton, hkRefPtr<hkaAnimationBinding> binding)
@@ -215,14 +305,7 @@ AnimationExport::AnimationExport(NiControllerSequenceRef seq, hkRefPtr<hkaSkelet
 
 bool AnimationExport::doExport()
 {
-	hkStringPtr rootName = binding->m_originalSkeletonName;
-	seq->SetStartTime(FloatINF);
-	seq->SetStopTime(FloatINF);
-	seq->SetFrequency(1.0f);
-	seq->SetCycleType( CYCLE_CLAMP );
-	seq->SetTargetName( string(rootName) );
-
-	seq->SetStartTime(0.0);
+	binding->m_originalSkeletonName = seq->GetTargetName().c_str();
 
 	if (!exportNotes())
 		return false;
@@ -232,8 +315,8 @@ bool AnimationExport::doExport()
 
 bool AnimationExport::exportNotes( )
 {
+#if 0
 	vector<StringKey> textKeys;
-
 
 	NiTextKeyExtraDataRef textKeyData = new NiTextKeyExtraData();
 	seq->SetTextKey(textKeyData);
@@ -267,41 +350,69 @@ bool AnimationExport::exportNotes( )
 	}
 
 	textKeyData->SetKeys(textKeys);
+#endif
 	return true;
 }
 
-static inline Niflib::Vector3 TOVECTOR3(const hkVector4& v){
-	return Niflib::Vector3(v.getSimdAt(0), v.getSimdAt(1), v.getSimdAt(2));
-}
+namespace {
+	static inline Niflib::Vector3 TOVECTOR3(const hkVector4& v){
+		return Niflib::Vector3(v.getSimdAt(0), v.getSimdAt(1), v.getSimdAt(2));
+	}
 
-static inline Niflib::Vector4 TOVECTOR4(const hkVector4& v){
-	return Niflib::Vector4(v.getSimdAt(0), v.getSimdAt(1), v.getSimdAt(2), v.getSimdAt(3));
-}
+	static inline Niflib::Vector4 TOVECTOR4(const hkVector4& v){
+		return Niflib::Vector4(v.getSimdAt(0), v.getSimdAt(1), v.getSimdAt(2), v.getSimdAt(3));
+	}
 
-static inline Niflib::Quaternion TOQUAT(const hkQuaternion& q, bool inverse = false){
-	Niflib::Quaternion qt(q.m_vec.getSimdAt(3), q.m_vec.getSimdAt(0), q.m_vec.getSimdAt(1), q.m_vec.getSimdAt(2));
-	return inverse ? qt.Inverse() : qt;
-}
-static inline Niflib::Quaternion TOQUAT(const hkRotation& rot, bool inverse = false){
-	return TOQUAT(hkQuaternion(rot), inverse);
-}
-static inline float Average(const Niflib::Vector3& val) {
-	return (val.x + val.y + val.z) / 3.0f;
-}
+	static inline hkVector4 TOVECTOR4(const Niflib::Vector4& v){
+		return hkVector4(v.x, v.y, v.z, v.w);
+	}
 
-const float MY_FLT_EPSILON = 1e-5f;
-static inline bool EQUALS(float a, float b){
-	return fabs(a - b) < MY_FLT_EPSILON;
-}
+	static inline Niflib::Quaternion TOQUAT(const hkQuaternion& q, bool inverse = false){
+		Niflib::Quaternion qt(q.m_vec.getSimdAt(3), q.m_vec.getSimdAt(0), q.m_vec.getSimdAt(1), q.m_vec.getSimdAt(2));
+		return inverse ? qt.Inverse() : qt;
+	}
 
-static inline bool EQUALS(const Niflib::Vector3& a, const Niflib::Vector3& b){
-	return (EQUALS(a.x,b.x) && EQUALS(a.y, b.y) && EQUALS(a.z, b.z) );
-}
+	static inline hkQuaternion TOQUAT(const Niflib::Quaternion& q, bool inverse = false){
+		hkVector4 v(q.x, q.y, q.z, q.w);
+		v.normalize4();
+		hkQuaternion qt(v.getSimdAt(0), v.getSimdAt(1), v.getSimdAt(2), v.getSimdAt(3));
+		if (inverse) qt.setInverse(qt);
+		return qt;
+	}
 
-static inline bool EQUALS(const Niflib::Quaternion& a, const Niflib::Quaternion& b){
-	return EQUALS(a.w, b.w) && EQUALS(a.x,b.x) && EQUALS(a.y, b.y) && EQUALS(a.z, b.z);
-}
+	static inline Niflib::Quaternion TOQUAT(const hkRotation& rot, bool inverse = false){
+		return TOQUAT(hkQuaternion(rot), inverse);
+	}
+	static inline float Average(const Niflib::Vector3& val) {
+		return (val.x + val.y + val.z) / 3.0f;
+	}
 
+	float QuatDot(const Quaternion& q, const Quaternion&p)
+	{
+		return q.w*p.w + q.x*p.x + q.y*p.y + q.z*p.z;
+	}
+
+	const float MY_FLT_EPSILON = 1e-5f;
+	static inline bool EQUALS(float a, float b){
+		return fabs(a - b) < MY_FLT_EPSILON;
+	}
+	static inline int COMPARE(float a, float b){
+		float d = a - b;
+		return (fabs(d) < MY_FLT_EPSILON ? 0 : (d > 0 ? 1 : -1));
+	}
+
+	static inline bool EQUALS(const Niflib::Vector3& a, const Niflib::Vector3& b){
+		return (EQUALS(a.x,b.x) && EQUALS(a.y, b.y) && EQUALS(a.z, b.z) );
+	}
+
+	static inline bool EQUALS(const Niflib::Quaternion& a, const Niflib::Quaternion& b){
+		return EQUALS(a.w, b.w) && EQUALS(a.x,b.x) && EQUALS(a.y, b.y) && EQUALS(a.z, b.z);
+	}
+
+	const float FramesPerSecond = 30.0f;
+	const float FramesIncrement = 0.0325f;
+
+}
 
 struct BoneDataReference
 {
@@ -318,159 +429,241 @@ struct BoneDataReference
 	float lastScale;
 };
 
-bool AnimationExport::exportController()
+static void FillTransforms( hkArray<hkQsTransform>& transforms, int boneIdx, int nbones
+					, const hkQsTransform& localTransform, PosRotScale prs = prsDefault
+					, int from=0, int to=-1) 
 {
-	hkRefPtr<hkaAnimation> anim = binding->m_animation;
-	int nframes = anim->getNumOriginalFrames();
-	int numTracks = anim->m_numberOfTransformTracks;
-	int nfloats = anim->m_numberOfFloatTracks;
+	int n = transforms.getSize() / nbones;
+	if (n == 0)
+		return;
 
-	if (numTracks == 0)
-		return false;
+	if (to == -1 || to >= n) to = n-1;
 
-	float duration = anim->m_duration;
-	seq->SetStopTime(duration);
-
-	hkReal incrFrame = anim->m_duration / (hkReal)nframes;
-
-	int nbones = skeleton->m_bones.getSize();
-
-	// dont know how to deal with this
-	if (numTracks > nbones)
+	if ((prs & prsDefault) == prsDefault)
 	{
-		Log::Error("Error processing skeleton '%s' number of tracks exceed bones.", (LPCSTR)binding->m_originalSkeletonName);
-		return false;
-	}
-
-	hkLocalArray<float> floatsOut(nfloats);
-	hkLocalArray<hkQsTransform> transformOut(numTracks);
-	floatsOut.setSize(nfloats);
-	transformOut.setSize(numTracks);
-	hkReal startTime = 0.0;
-
-	hkArray<hkInt16> tracks;
-	tracks.setSize(numTracks);
-	for (int i=0; i<numTracks; ++i) tracks[i]=i;
-
-	vector<BoneDataReference> dataList;
-	dataList.resize(numTracks);
-
-	NiObjectNETRef placeHolder = new NiObjectNET();
-	for (int i=0,n=numTracks; i<n; ++i)
-	{
-		NiTransformControllerRef controller = new NiTransformController();
-		NiTransformInterpolatorRef interp = new NiTransformInterpolator();
-		controller->SetInterpolator(interp);
-
-		NiTransformDataRef data = new NiTransformData();
-		interp->SetData(data);
-
-		hkQsTransform localTransform = skeleton->m_referencePose[i];
-		interp->SetTranslation(TOVECTOR3(localTransform.getTranslation()));
-		interp->SetRotation(TOQUAT(localTransform.getRotation()));
-		interp->SetScale(Average(TOVECTOR3(localTransform.getScale()))); // no scaling?
-
-		BoneDataReference& boneData = dataList[i];
-		boneData.name = skeleton->m_bones[i].m_name;
-		boneData.transCont = controller;
-		boneData.transData = data;
-		boneData.trans.reserve(nframes);
-		boneData.rot.reserve(nframes);
-		boneData.scale.reserve(nframes);
-		boneData.lastTrans = interp->GetTranslation();
-		boneData.lastRotate = interp->GetRotation();
-		boneData.lastScale = interp->GetScale();
-	}
-
-
-	for (hkReal time = startTime; time<anim->m_duration; time += incrFrame)
-	{
-		//hkUint32 uiAnnotations = anim->getNumAnnotations(time, incrFrame);
-		//hkUint32 nAnnotations = anim->getAnnotations(time, incrFrame, annotations.begin(), nbones);
-
-		anim->samplePartialTracks(time, numTracks, transformOut.begin(), nfloats, floatsOut.begin(), HK_NULL);
-
-		// assume 1-to-1 transforms
-		for (int i=0; i<numTracks; ++i)
+		for (int idx = from; idx <= to; ++idx)
 		{
-			BoneDataReference& data = dataList[i];
-			hkQsTransform& transform = transformOut[i];			
-			Vector3Key vk;
-			vk.time = time;
-			vk.data = TOVECTOR3(transform.getTranslation());
-			if (!EQUALS(vk.data,data.lastTrans))
-			{
-				data.trans.push_back(vk);
-				data.lastTrans = vk.data;
-			}
-
-			QuatKey qk;
-			qk.time = time;
-			qk.data = TOQUAT(transform.getRotation());
-			if (!EQUALS(qk.data,data.lastRotate))
-			{
-				data.rot.push_back(qk);
-				data.lastRotate = qk.data;
-			}
-
-			FloatKey sk;
-			sk.time = time;
-			sk.data = Average(TOVECTOR3(transform.getScale()));
-			if (!EQUALS(data.lastScale,sk.data))
-			{
-				data.scale.push_back(sk);
-				data.lastScale = sk.data;
-			}
+			hkQsTransform& transform = transforms[idx*nbones + boneIdx];
+			transform = localTransform;
 		}
 	}
-	for (int i=0; i<numTracks; ++i)
+	else
 	{
-		bool keep=false;
-		BoneDataReference& data = dataList[i];
-		if (!data.trans.empty())
+		for (int idx = from; idx <= to; ++idx)
 		{
-			data.transData->SetTranslateType(LINEAR_KEY);
-			data.transData->SetTranslateKeys(data.trans);
-			keep = true;
-		}
-		if (!data.rot.empty())
-		{
-			data.transData->SetRotateType(QUADRATIC_KEY);
-			data.transData->SetQuatRotateKeys(data.rot);
-			keep = true;
-		}
-		if (!data.scale.empty())
-		{
-			data.transData->SetScaleType(LINEAR_KEY);
-			data.transData->SetScaleKeys(data.scale);
-			keep = true;
-		}
-		if (keep)
-		{
-			seq->AddController(data.name, data.transCont);
+			hkQsTransform& transform = transforms[idx*nbones + boneIdx];
+			if ((prs & prsPos) != 0)
+				transform.setTranslation(localTransform.getTranslation());
+			if ((prs & prsRot) != 0)
+				transform.setRotation(localTransform.getRotation());
+			if ((prs & prsScale) != 0)
+				transform.setScale(localTransform.getScale());
 		}
 	}
-
-	// remove controllers now
-	vector<ControllerLink> links = seq->GetControlledBlocks();
-	for (vector<ControllerLink>::iterator itr = links.begin(); itr != links.end(); ++itr)
+}
+static void SetTransformPosition(hkQsTransform& transform, hkVector4& p)
+{
+	if (p.getSimdAt(0) != FloatNegINF) transform.setTranslation(p);
+}
+static void SetTransformRotation(hkQsTransform& transform, hkQuaternion& q)
+{
+	if (q.m_vec.getSimdAt(3) != FloatNegINF) transform.setRotation(q);
+}
+static void SetTransformScale(hkQsTransform& transform, float s)
+{
+	if (s != FloatNegINF) transform.setScale(hkVector4(s,s,s));
+}
+static void PosRotScaleNode(hkQsTransform& transform, hkVector4& p, hkQuaternion& q, float s, PosRotScale prs)
+{
+	if (prs & prsScale) SetTransformScale(transform, s);
+	if (prs & prsRot) SetTransformRotation(transform, q);
+	if (prs & prsPos) SetTransformPosition(transform, p);
+}
+static void SetTransformPositionRange( hkArray<hkQsTransform>& transforms, int nbones, int boneIdx
+						   , float &currentTime, float lastTime, int &frame
+						   , Vector3Key &first, Vector3Key &last)
+{
+	int n = transforms.getSize()/nbones;
+	hkVector4 p = TOVECTOR4(first.data);
+	for ( ; COMPARE(currentTime, lastTime) <= 0 && frame < n; currentTime += FramesIncrement, ++frame)
 	{
-		NiTransformControllerRef controller = (*itr).controller;
-		(*itr).interpolator = controller->GetInterpolator();
-		(*itr).controller = NULL;
+		hkQsTransform& transform = transforms[frame*nbones + boneIdx];
+		SetTransformPosition(transform, p);
 	}
-	seq->SetControlledBlocks(links);
-
-	return true;
+}
+static void SetTransformRotationRange( hkArray<hkQsTransform>& transforms, int nbones, int boneIdx
+									  , float &currentTime, float lastTime, int &frame
+									  , QuatKey &first, QuatKey &last)
+{
+	int n = transforms.getSize()/nbones;
+	hkQuaternion q = TOQUAT(first.data);
+	for ( ; COMPARE(currentTime, lastTime) <= 0&& frame < n; currentTime += FramesIncrement, ++frame)
+	{
+		hkQsTransform& transform = transforms[frame*nbones + boneIdx];
+		SetTransformRotation(transform, q);
+	}
+}
+static void SetTransformScaleRange( hkArray<hkQsTransform>& transforms, int nbones, int boneIdx
+									  , float &currentTime, float lastTime, int &frame
+									  , FloatKey &first, FloatKey &last)
+{
+	int n = transforms.getSize()/nbones;
+	for ( ; COMPARE(currentTime, lastTime) <= 0 && frame < n; currentTime += FramesIncrement, ++frame)
+	{
+		hkQsTransform& transform = transforms[frame*nbones + boneIdx];
+		SetTransformScale(transform, first.data);
+	}
 }
 
 
-void ExportAnimations(const string& rootdir, const string& skelfile, const vector<string>& animlist, const string& outdir, Niflib::NifInfo& nifver, bool norelativepath = false)
+bool AnimationExport::exportController()
+{
+	vector<Niflib::ControllerLink> blocks = seq->GetControlledBlocks();
+	int nbones = skeleton->m_bones.getSize();
+	int numTracks = nbones;
+	float duration = seq->GetStopTime() - seq->GetStartTime();
+	int nframes = (int)ceil(duration / FramesIncrement);
+
+	int nCurrentFrame = 0;
+
+	hkRefPtr<hkaInterleavedUncompressedAnimation> tempAnim = new hkaInterleavedUncompressedAnimation();
+	tempAnim->m_duration = duration;
+	tempAnim->m_numberOfTransformTracks = nbones;
+	tempAnim->m_numberOfFloatTracks = 0;//anim->m_numberOfFloatTracks;
+	tempAnim->m_transforms.setSize(numTracks*nframes, hkQsTransform::getIdentity());
+	tempAnim->m_floats.setSize(tempAnim->m_numberOfFloatTracks);
+	tempAnim->m_annotationTracks.setSize(numTracks);
+
+	hkArray<hkQsTransform>& transforms = tempAnim->m_transforms;
+
+	map<string, int> boneMap;
+	for (int i=0; i<nbones; ++i)
+	{
+		string name = skeleton->m_bones[i].m_name;
+		boneMap[name] = i;
+	}
+
+	for ( vector<Niflib::ControllerLink>::iterator bitr = blocks.begin(); bitr != blocks.end(); ++bitr)
+	{
+		map<string, int>::iterator boneitr = boneMap.find((*bitr).nodeName);
+		if (boneitr == boneMap.end())
+		{
+			Log::Warn("Unknown bone '%s' found in animation. Skipping.", (*bitr).nodeName.c_str());
+			continue;
+		}
+
+		int boneIdx = boneitr->second;
+		hkQsTransform localTransform = skeleton->m_referencePose[boneIdx];
+
+		FillTransforms(transforms, boneIdx, nbones, localTransform); // prefill transforms with bindpose
+
+		if ( NiTransformInterpolatorRef interpolator = DynamicCast<NiTransformInterpolator>((*bitr).interpolator) )
+		{
+			if (NiTransformDataRef data = interpolator->GetData())
+			{
+				if ( data->GetTranslateType() == Niflib::LINEAR_KEY )
+				{
+					vector<Vector3Key> keys = data->GetTranslateKeys();
+					int n = keys.size();
+					if (n > 0)
+					{
+						int frame = 0;
+						float currentTime = 0.0f;
+						Vector3Key* itr = &keys[0], *last = &keys[n-1];
+						SetTransformPositionRange(transforms, nbones, boneIdx, currentTime, (*itr).time, frame, *itr, *itr);
+						for (int i=1; i<n; ++i)
+						{
+							Vector3Key* next = &keys[i];
+							SetTransformPositionRange(transforms, nbones, boneIdx, currentTime, (*next).time, frame, *itr, *next);
+							itr = next;
+						}
+						SetTransformPositionRange(transforms, nbones, boneIdx, currentTime, duration, frame, *last, *last);
+					}
+				}
+				else
+				{
+					Log::Verbose("Missing transform data for %s", boneitr->first.c_str());
+				}
+				if ( data->GetRotateType() == Niflib::QUADRATIC_KEY )
+				{
+					vector<QuatKey> keys = data->GetQuatRotateKeys();
+					int n = keys.size();
+					if (n > 0)
+					{
+						int frame = 0;
+						float currentTime = 0.0f;
+						QuatKey* itr = &keys[0], *last = &keys[n-1];
+						SetTransformRotationRange(transforms, nbones, boneIdx, currentTime, itr->time, frame, *itr, *itr);
+						for (int i=1; i<n; ++i)
+						{
+							QuatKey* next = &keys[i];
+							SetTransformRotationRange(transforms, nbones, boneIdx, currentTime, next->time, frame, *itr, *next);
+							itr = next;
+						}
+						SetTransformRotationRange(transforms, nbones, boneIdx, currentTime, duration, frame, *last, *last);
+					}
+				}
+				else
+				{
+					Log::Verbose("Missing rotation data for %s", boneitr->first.c_str());
+				}
+				if ( data->GetScaleType() == Niflib::LINEAR_KEY )
+				{
+					vector<FloatKey> keys = data->GetScaleKeys();
+					int n = keys.size();
+					if (n > 0)
+					{
+						int frame = 0;
+						float currentTime = 0.0f;
+						FloatKey* itr = &keys[0], *last = &keys[n-1];
+						SetTransformScaleRange(transforms, nbones, boneIdx, currentTime, itr->time, frame, *itr, *itr);
+						for (int i=1; i<n; ++i)
+						{
+							FloatKey* next = &keys[i];
+							SetTransformScaleRange(transforms, nbones, boneIdx, currentTime, next->time, frame, *itr, *next);
+							itr = next;
+						}
+						SetTransformScaleRange(transforms, nbones, boneIdx, currentTime, duration, frame, *last, *last);
+					}
+				}
+				else
+				{
+					Log::Verbose("Missing scaling data for %s", boneitr->first.c_str());
+				}
+			}
+			else
+			{
+
+			}
+		}
+		else
+		{
+
+		}
+	}
+
+	hkaSkeletonUtils::normalizeRotations (transforms.begin(), transforms.getSize()); 
+
+	// create the animation with default settings
+	{
+		hkaSplineCompressedAnimation::TrackCompressionParams tparams;
+		hkaSplineCompressedAnimation::AnimationCompressionParams aparams;
+
+		tparams.m_rotationTolerance = 0.001f;
+		tparams.m_rotationQuantizationType = hkaSplineCompressedAnimation::TrackCompressionParams::THREECOMP40;
+
+		hkRefPtr<hkaSplineCompressedAnimation> outAnim = new hkaSplineCompressedAnimation( *tempAnim.val(), tparams, aparams ); 
+		binding->m_animation = outAnim;
+	}
+	
+	return true;
+}
+
+void ExportAnimations(const string& rootdir, const string& skelfile, const vector<string>& animlist, const string& outdir, Niflib::NifInfo& nifver, hkSerializeUtil::SaveOptionBits flags, bool norelativepath = false)
 {
 	hkResource* skelResource = NULL;
 	hkResource* animResource = NULL;
 	hkaSkeleton* skeleton = NULL;
-	hkaAnimationContainer * animCont= NULL;
 
 	Log::Verbose("ExportAnimation('%s','%s','%s')", rootdir.c_str(), skelfile.c_str(), outdir.c_str());
 	// Read back a serialized file
@@ -501,7 +694,7 @@ void ExportAnimations(const string& rootdir, const string& skelfile, const vecto
 
 			char outfile[MAX_PATH], relout[MAX_PATH];
 			LPCSTR extn = PathFindExtension(outdir.c_str());
-			if (stricmp(extn, ".kf") == 0)
+			if (stricmp(extn, ".hkx") == 0)
 			{
 				strcpy(outfile, outdir.c_str());
 			}
@@ -519,7 +712,7 @@ void ExportAnimations(const string& rootdir, const string& skelfile, const vecto
 					GetFullPathName(outfile, MAX_PATH, outfile, NULL);
 				}				
 				PathRemoveExtension(outfile);
-				PathAddExtension(outfile, ".kf");
+				PathAddExtension(outfile, ".hkx");
 			}
 			char workdir[MAX_PATH];
 			_getcwd(workdir, MAX_PATH);
@@ -528,63 +721,56 @@ void ExportAnimations(const string& rootdir, const string& skelfile, const vecto
 			Log::Verbose("ExportAnimation Reading '%s'", animfile.c_str());
 
 
-			hkIstream stream(animfile.c_str());
-			hkStreamReader *reader = stream.getStreamReader();
-			hkSerializeUtil::FormatDetails detailsOut;
-			hkSerializeUtil::detectFormat( reader, detailsOut );
-			hkBool32 isLoadable = hkSerializeUtil::isLoadable( reader );
-			animResource = hkSerializeUtilLoad(reader);
+			Niflib::NifOptions options;
+			options.exceptionOnErrors = false;
+			vector<NiControllerSequenceRef> blocks = DynamicCast<NiControllerSequence>(Niflib::ReadNifList(animfile, NULL, &options));
 
-			const char * hktypename = animResource->getContentsTypeName();
-			void * contentPtr = animResource->getContentsPointer(HK_NULL, HK_NULL);
-			hkRootLevelContainer* scene = animResource->getContents<hkRootLevelContainer>();
-			animCont = scene->findObject<hkaAnimationContainer>();
-			if (animCont != NULL)
+			int nbindings = blocks.size();
+			if ( nbindings == 0)
 			{
-				if (animCont != NULL)
+				Log::Error("Animation file contains no animation bindings.  Not exporting.");
+			}
+			else if ( nbindings != 1)
+			{
+				Log::Error("Animation file contains more than one animation binding.  Not exporting.");
+			}
+			else
+			{
+				for ( int i=0, n=nbindings; i<n; ++i)
 				{
-					int nbindings = animCont->m_bindings.getSize();
-					if ( nbindings == 0)
+					char fname[MAX_PATH];
+					_splitpath(animfile.c_str(), NULL, NULL, fname, NULL);
+
+					NiControllerSequenceRef seq = blocks[i];
+					hkRootLevelContainer rootCont;
+					hkRefPtr<hkaAnimationContainer> skelAnimCont = new hkaAnimationContainer();
+					hkRefPtr<hkaAnimationBinding> newBinding = new hkaAnimationBinding();
+					skelAnimCont->m_bindings.append(&newBinding, 1);
+					rootCont.m_namedVariants.pushBack( hkRootLevelContainer::NamedVariant("Merged Animation Container", skelAnimCont.val(), &skelAnimCont->staticClass()) );
+
+					Log::Verbose("ExportAnimation Exporting '%s'", outfile);
+
+					AnimationExport exporter(seq, skeleton, newBinding);
+					if ( exporter.doExport() )
 					{
-						Log::Error("Animation file contains no animation bindings.  Not exporting.");
-					}
-					else if ( nbindings != 1)
-					{
-						Log::Error("Animation file contains more than one animation binding.  Not exporting.");
+						char outfiledir[MAX_PATH];
+						strcpy(outfiledir, outfile);
+						PathRemoveFileSpec(outfiledir);
+						CreateDirectories(outfiledir);
+
+						Log::Info("Exporting '%s'", relout);
+						skelAnimCont->m_animations.pushBack(newBinding->m_animation);
+
+
+						hkOstream stream(outfile);
+						hkResult res = hkSerializeUtil::save( &rootCont, rootCont.staticClass(), stream.getStreamWriter(), flags );
 					}
 					else
 					{
-						for ( int i=0, n=animCont->m_bindings.getSize(); i<n; ++i)
-						{
-							char fname[MAX_PATH];
-							_splitpath(animfile.c_str(), NULL, NULL, fname, NULL);
-
-							hkRefPtr<hkaAnimationBinding> binding = animCont->m_bindings[i];
-							NiControllerSequenceRef seq = new NiControllerSequence();
-							seq->SetName(fname);
-
-							Log::Verbose("ExportAnimation Exporting '%s'", outfile);
-
-							AnimationExport exporter(seq, skeleton, binding);
-							if ( exporter.doExport() )
-							{
-								char outfiledir[MAX_PATH];
-								strcpy(outfiledir, outfile);
-								PathRemoveFileSpec(outfiledir);
-								CreateDirectories(outfiledir);
-
-								Log::Info("Exporting '%s'", relout);
-								Niflib::WriteNifTree(outfile, seq, nifver);
-							}
-							else
-							{
-								Log::Error("Export failed for '%s'", relout);
-							}
-						}
+						Log::Error("Export failed for '%s'", relout);
 					}
 				}
 			}
-			if (animResource) animResource->removeReference();
 		}
 	}
 
@@ -593,50 +779,32 @@ void ExportAnimations(const string& rootdir, const string& skelfile, const vecto
 }
 //////////////////////////////////////////////////////////////////////////
 namespace {
-EnumLookupType LogFlags[] = 
-{
-	{LOG_NONE,   "NONE"},
-	{LOG_ALL,    "ALL"},
-	{LOG_VERBOSE,"VERBOSE"},
-	{LOG_DEBUG,  "DEBUG"},
-	{LOG_INFO,   "INFO"},
-	{LOG_WARN,   "WARN"},
-	{LOG_ERROR,  "ERROR"},
-	{0, NULL}
-};
-}
-
-static void HelpString(hkxcmd::HelpType type){
-	switch (type)
+	EnumLookupType SaveFlags[] = 
 	{
-	case hkxcmd::htShort: Log::Info("ExportKF - Convert Havok HKX animation to Gamebryo KF animation."); break;
-	case hkxcmd::htLong:  
-		{
-			char fullName[MAX_PATH], exeName[MAX_PATH];
-			GetModuleFileName(NULL, fullName, MAX_PATH);
-			_splitpath(fullName, NULL, NULL, exeName, NULL);
-			
-			Log::Info("Usage: %s ExportKF [-opts[modifiers]] [skel.hkx] [anim.hkx] [anim.kf]", exeName); 
-			Log::Info("  Convert Havok HKX animation to Gamebryo KF animation." );
-			Log::Info("  If a folder is specified then the folder will be searched for any projects and convert those." );
-			Log::Info("");
-			Log::Info("<Options>" );
-			Log::Info("  skel.hkx      Path to Havok skeleton for animation binding." );
-			Log::Info("  anim.hkx      Path to Havok animation to convert" );
-			Log::Info("  anim.kf       Path to Gamebryo animation to write (Default: anim.hkx with kf ext)" );
-			Log::Info("<Switches>" );
-			Log::Info(" -d[:level]     Debug Level: ERROR,WARN,INFO,DEBUG,VERBOSE (Default: INFO)" );
-			Log::Info(" -n             Disable recursive file processing" );
-			Log::Info(" -v x.x.x.x     Nif Version to write as - Defaults to 20.2.0.7" );
-			Log::Info(" -u x           Nif User Version to write as - Defaults to 12" );
-			Log::Info(" -u2 x          Nif User2 Version to write as - Defaults to 83" );
-			Log::Info("");
-		}
-		break;
-	}
+		{hkSerializeUtil::SAVE_DEFAULT,                   "SAVE_DEFAULT"},
+		{hkSerializeUtil::SAVE_TEXT_FORMAT,               "SAVE_TEXT_FORMAT"},
+		{hkSerializeUtil::SAVE_SERIALIZE_IGNORED_MEMBERS, "SAVE_SERIALIZE_IGNORED_MEMBERS"},
+		{hkSerializeUtil::SAVE_WRITE_ATTRIBUTES,          "SAVE_WRITE_ATTRIBUTES"},
+		{hkSerializeUtil::SAVE_CONCISE,                   "SAVE_CONCISE"},
+		{hkSerializeUtil::SAVE_TEXT_NUMBERS,              "SAVE_TEXT_NUMBERS"},
+		{0, NULL}
+	};
+
+	EnumLookupType LogFlags[] = 
+	{
+		{LOG_NONE,   "NONE"},
+		{LOG_ALL,    "ALL"},
+		{LOG_VERBOSE,"VERBOSE"},
+		{LOG_DEBUG,  "DEBUG"},
+		{LOG_INFO,   "INFO"},
+		{LOG_WARN,   "WARN"},
+		{LOG_ERROR,  "ERROR"},
+		{0, NULL}
+	};
 }
 
-static void ExportProject( const string &projfile, const char * rootPath, const char * outdir, Niflib::NifInfo& nifver, bool recursion)
+
+static void ExportProject( const string &projfile, const char * rootPath, const char * outdir, Niflib::NifInfo& nifver, hkSerializeUtil::SaveOptionBits flags, bool recursion)
 {
 	vector<string> skelfiles, animfiles;
 	char projpath[MAX_PATH], skelpath[MAX_PATH], animpath[MAX_PATH];
@@ -675,13 +843,13 @@ static void ExportProject( const string &projfile, const char * rootPath, const 
 	}
 	else
 	{
-		ExportAnimations(string(rootPath), skelfiles[0],animfiles, outdir, nifver, false);
+		ExportAnimations(string(rootPath), skelfiles[0],animfiles, outdir, nifver, flags, false);
 	}
 }
 
 static void HK_CALL errorReport(const char* msg, void* userContext)
 {
-	Log::Error("%s", msg);
+	Log::Debug("%s", msg);
 }
 
 
@@ -691,6 +859,7 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 	vector<string> paths;
 	int argc = cmdLine.argc;
 	char **argv = cmdLine.argv;
+	hkSerializeUtil::SaveOptionBits flags = (hkSerializeUtil::SaveOptionBits)(hkSerializeUtil::SAVE_TEXT_FORMAT|hkSerializeUtil::SAVE_TEXT_NUMBERS);
 	Niflib::NifInfo nifver;
 	nifver.version = VER_20_2_0_7;
 	nifver.userVersion = 11;
@@ -706,9 +875,24 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 		{
 			switch (tolower(arg[1]))
 			{
+			case 'f':
+				{
+					const char *param = arg+2;
+					if (*param == ':' || *param=='=') ++param;
+					argv[i] = NULL;
+					if ( param[0] == 0 && ( i+1<argc && ( argv[i+1][0] != '-' || argv[i+1][0] != '/' ) ) ) {
+						param = argv[++i];
+						argv[i] = NULL;
+					}
+					if ( param[0] == 0 )
+						break;
+					flags = (hkSerializeUtil::SaveOptionBits)StringToFlags(param, SaveFlags, hkSerializeUtil::SAVE_DEFAULT);
+				} break;
+
 			case 'n':
 				recursion = false;
 				break;
+
 			case 'v':
 			 {
 				 const char *param = arg+2;
@@ -875,7 +1059,7 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 		for (vector<string>::iterator itr = files.begin(); itr != files.end(); ++itr)
 		{
 			string projfile = (*itr).c_str();
-			ExportProject(projfile, rootPath, outdir, nifver, recursion);
+			ExportProject(projfile, rootPath, outdir, nifver, flags, recursion);
 		}
 	}
 	else
@@ -907,7 +1091,7 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 				} else { 
 					strcpy(outdir, rootPath); 
 				}
-				ExportProject(skelpath, rootPath, outdir, nifver, recursion);
+				ExportProject(skelpath, rootPath, outdir, nifver, flags, recursion);
 			}
 		}
 		else
@@ -938,7 +1122,7 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 						PathRemoveFileSpec(tempdir);
 						PathCombine(animDir, tempdir, "..\animations");
 						PathAddBackslash(animDir);
-						ExportProject(skelpath, rootPath, rootPath, nifver, recursion);
+						ExportProject(skelpath, rootPath, rootPath, nifver, flags, recursion);
 					}
 					else if (paths.size() == 2) // second path will be output
 					{
@@ -950,7 +1134,7 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 						PathCombine(rootPath,tempdir,"..\\animations");
 						GetFullPathName(rootPath, MAX_PATH, rootPath, NULL);
 						GetFullPathName(outdir, MAX_PATH, outdir, NULL);
-						ExportProject(skelpath, rootPath, outdir, nifver, recursion);
+						ExportProject(skelpath, rootPath, outdir, nifver, flags, recursion);
 					}
 					else // second path is animation, third is output
 					{
@@ -978,7 +1162,7 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 								strcpy(outdir, rootPath); 
 							}
 
-							ExportAnimations(string(rootPath), skelpath, animfiles, outdir, nifver, norelativepath);
+							ExportAnimations(string(rootPath), skelpath, animfiles, outdir, nifver, flags, norelativepath);
 						}
 
 					}
@@ -993,4 +1177,4 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 	return true;
 }
 
-REGISTER_COMMAND(ExportKF, HelpString, ExecuteCmd);
+REGISTER_COMMAND(ConvertKF, HelpString, ExecuteCmd);

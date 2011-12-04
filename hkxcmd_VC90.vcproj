@@ -367,7 +367,7 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Addins"
+			Name="Commands"
 			>
 			<File
 				RelativePath=".\Addins\About.cpp"
@@ -396,7 +396,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Addins\ConvertKF.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Addins\DumpList.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Addins\ExportKF.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Addins\Retarget.cpp"
 				>
 			</File>
 		</Filter>
@@ -411,6 +423,10 @@
 			</File>
 			<File
 				RelativePath=".\Core\config.h"
+				>
+			</File>
+			<File
+				RelativePath=".\compat\hkbProjectStringData.h"
 				>
 			</File>
 			<File
@@ -619,6 +635,30 @@
 			</File>
 			<File
 				RelativePath=".\zlib\zutil.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="compat"
+			>
+			<File
+				RelativePath=".\compat\hkbAttachmentSetup.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\compat\hkbAttachmentSetup.h"
+				>
+			</File>
+			<File
+				RelativePath=".\compat\hkbProjectData.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\compat\hkbProjectData.h"
+				>
+			</File>
+			<File
+				RelativePath=".\compat\hkbProjectStringData.cpp"
 				>
 			</File>
 		</Filter>

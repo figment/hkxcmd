@@ -95,6 +95,6 @@
 //#define HK_EXCLUDE_FEATURE_hkpKdTreeWorldManager
 #include <Common/Base/Config/hkProductFeatures.cxx>
 
-//#define HK_CLASSES_FILE <Common/Serialize/Classlist/hkKeyCodeClasses.h>
+#define HK_CLASSES_FILE <Common/Serialize/Classlist/hkKeyCodeClasses.h>
 //#include <Common/Serialize/Util/hkBuiltinTypeRegistry.cxx>
 #pragma endregion
