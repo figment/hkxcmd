@@ -160,6 +160,54 @@ enum PosRotScale
 	prsScale = 0x4,
 	prsDefault = prsPos | prsRot | prsScale,
 };
+
+enum hkPackFormat
+{
+	HKPF_XML,
+	HKPF_DEFAULT,
+	HKPF_WIN32,
+	HKPF_AMD64,
+	HKPF_XBOX,
+	HKPF_XBOX360,
+};
+
+static 
+EnumLookupType SaveFlags[] = 
+{
+	{hkSerializeUtil::SAVE_DEFAULT,                   "SAVE_DEFAULT"},
+	{hkSerializeUtil::SAVE_TEXT_FORMAT,               "SAVE_TEXT_FORMAT"},
+	{hkSerializeUtil::SAVE_SERIALIZE_IGNORED_MEMBERS, "SAVE_SERIALIZE_IGNORED_MEMBERS"},
+	{hkSerializeUtil::SAVE_WRITE_ATTRIBUTES,          "SAVE_WRITE_ATTRIBUTES"},
+	{hkSerializeUtil::SAVE_CONCISE,                   "SAVE_CONCISE"},
+	{hkSerializeUtil::SAVE_TEXT_NUMBERS,              "SAVE_TEXT_NUMBERS"},
+	{0, NULL}
+};
+
+static 
+EnumLookupType LogFlags[] = 
+{
+	{LOG_NONE,   "NONE"},
+	{LOG_ALL,    "ALL"},
+	{LOG_VERBOSE,"VERBOSE"},
+	{LOG_DEBUG,  "DEBUG"},
+	{LOG_INFO,   "INFO"},
+	{LOG_WARN,   "WARN"},
+	{LOG_ERROR,  "ERROR"},
+	{0, NULL}
+};
+
+static 
+EnumLookupType PackFlags[] = 
+{
+	{HKPF_XML,   "XML"},
+	{HKPF_DEFAULT, "DEFAULT"},
+	{HKPF_WIN32, "WIN32"},
+	{HKPF_AMD64, "AMD64"},
+	{HKPF_XBOX,  "XBOX"},
+	{HKPF_XBOX360, "XBOX360"},
+	{0, NULL}
+};
+
 }
 //////////////////////////////////////////////////////////////////////////
 // Constants
@@ -173,7 +221,6 @@ const float FloatNegINF = *(float*)&IntegerNegInf;
 //////////////////////////////////////////////////////////////////////////
 // Structures
 //////////////////////////////////////////////////////////////////////////
-
 
 //////////////////////////////////////////////////////////////////////////
 // Helper functions
@@ -193,6 +240,31 @@ static hkResource* hkSerializeUtilLoad( hkStreamReader* stream
 		//	detailsOut->id = hkSerializeUtil::ErrorDetails::ERRORID_LOAD_FAILED;
 		return NULL;
 	}
+}
+
+static hkPackfileWriter::Options GetWriteOptionsFromFormat(hkPackFormat format)
+{
+	hkPackfileWriter::Options options;
+	options.m_layout = hkStructureLayout::MsvcWin32LayoutRules;
+
+	switch(format)
+	{
+	case HKPF_XML:
+	case HKPF_DEFAULT:
+	case HKPF_WIN32:
+		options.m_layout = hkStructureLayout::MsvcWin32LayoutRules;
+		break;
+	case HKPF_AMD64:
+		options.m_layout = hkStructureLayout::MsvcAmd64LayoutRules;
+		break;
+	case HKPF_XBOX:
+		options.m_layout = hkStructureLayout::MsvcXboxLayoutRules;
+		break;
+	case HKPF_XBOX360:
+		options.m_layout = hkStructureLayout::Xbox360LayoutRules;
+		break;
+	}
+	return options;
 }
 
 static void HelpString(hkxcmd::HelpType type){
@@ -216,7 +288,15 @@ static void HelpString(hkxcmd::HelpType type){
 			Log::Info("<Switches>" );
 			Log::Info(" -d[:level]     Debug Level: ERROR,WARN,INFO,DEBUG,VERBOSE (Default: INFO)" );
 			Log::Info("");
-			Log::Info(" -f <flags>         Havok saving flags (Defaults:  SAVE_TEXT_FORMAT|SAVE_TEXT_NUMBERS)");
+			Log::Info(" -v:<flags>     Havok Packfile saving flags");
+			Log::Info("    DEFAULT     Save as Default Format (MSVC Win32 Packed)");
+			Log::Info("    XML         Save as Xml Format");
+			Log::Info("    WIN32       Save as Win32 Format");
+			Log::Info("    AMD64       Save as AMD64 Format");
+			Log::Info("    XBOX        Save as XBOX Format");
+			Log::Info("    XBOX360     Save as XBOX360 Format");
+			Log::Info("");
+			Log::Info(" -f:<flags>         Havok saving flags (Defaults:  SAVE_TEXT_FORMAT|SAVE_TEXT_NUMBERS)");
 			Log::Info("     SAVE_DEFAULT           = All flags default to OFF, enable whichever are needed");
 			Log::Info("     SAVE_TEXT_FORMAT       = Use text (usually XML) format, default is binary format if available.");
 			Log::Info("     SAVE_SERIALIZE_IGNORED_MEMBERS = Write members which are usually ignored.");
@@ -226,9 +306,6 @@ static void HelpString(hkxcmd::HelpType type){
 			Log::Info("     SAVE_TEXT_NUMBERS      = Floating point numbers output as text, not as binary.  ");
 			Log::Info("                              Makes them easily readable/editable, but values may not be exact.");
 			Log::Info(" -n             Disable recursive file processing" );
-			Log::Info(" -v x.x.x.x     Nif Version to write as - Defaults to 20.2.0.7" );
-			Log::Info(" -u x           Nif User Version to write as - Defaults to 12" );
-			Log::Info(" -u2 x          Nif User2 Version to write as - Defaults to 83" );
 			Log::Info("");
 		}
 		break;
@@ -429,11 +506,11 @@ struct BoneDataReference
 	float lastScale;
 };
 
-static void FillTransforms( hkArray<hkQsTransform>& transforms, int boneIdx, int nbones
+static void FillTransforms( hkArray<hkQsTransform>& transforms, int boneIdx, int numTracks
 					, const hkQsTransform& localTransform, PosRotScale prs = prsDefault
 					, int from=0, int to=-1) 
 {
-	int n = transforms.getSize() / nbones;
+	int n = transforms.getSize() / numTracks;
 	if (n == 0)
 		return;
 
@@ -443,7 +520,7 @@ static void FillTransforms( hkArray<hkQsTransform>& transforms, int boneIdx, int
 	{
 		for (int idx = from; idx <= to; ++idx)
 		{
-			hkQsTransform& transform = transforms[idx*nbones + boneIdx];
+			hkQsTransform& transform = transforms[idx*numTracks + boneIdx];
 			transform = localTransform;
 		}
 	}
@@ -451,7 +528,7 @@ static void FillTransforms( hkArray<hkQsTransform>& transforms, int boneIdx, int
 	{
 		for (int idx = from; idx <= to; ++idx)
 		{
-			hkQsTransform& transform = transforms[idx*nbones + boneIdx];
+			hkQsTransform& transform = transforms[idx*numTracks + boneIdx];
 			if ((prs & prsPos) != 0)
 				transform.setTranslation(localTransform.getTranslation());
 			if ((prs & prsRot) != 0)
@@ -479,38 +556,38 @@ static void PosRotScaleNode(hkQsTransform& transform, hkVector4& p, hkQuaternion
 	if (prs & prsRot) SetTransformRotation(transform, q);
 	if (prs & prsPos) SetTransformPosition(transform, p);
 }
-static void SetTransformPositionRange( hkArray<hkQsTransform>& transforms, int nbones, int boneIdx
+static void SetTransformPositionRange( hkArray<hkQsTransform>& transforms, int numTracks, int boneIdx
 						   , float &currentTime, float lastTime, int &frame
 						   , Vector3Key &first, Vector3Key &last)
 {
-	int n = transforms.getSize()/nbones;
+	int n = transforms.getSize()/numTracks;
 	hkVector4 p = TOVECTOR4(first.data);
 	for ( ; COMPARE(currentTime, lastTime) <= 0 && frame < n; currentTime += FramesIncrement, ++frame)
 	{
-		hkQsTransform& transform = transforms[frame*nbones + boneIdx];
+		hkQsTransform& transform = transforms[frame*numTracks + boneIdx];
 		SetTransformPosition(transform, p);
 	}
 }
-static void SetTransformRotationRange( hkArray<hkQsTransform>& transforms, int nbones, int boneIdx
+static void SetTransformRotationRange( hkArray<hkQsTransform>& transforms, int numTracks, int boneIdx
 									  , float &currentTime, float lastTime, int &frame
 									  , QuatKey &first, QuatKey &last)
 {
-	int n = transforms.getSize()/nbones;
+	int n = transforms.getSize()/numTracks;
 	hkQuaternion q = TOQUAT(first.data);
 	for ( ; COMPARE(currentTime, lastTime) <= 0&& frame < n; currentTime += FramesIncrement, ++frame)
 	{
-		hkQsTransform& transform = transforms[frame*nbones + boneIdx];
+		hkQsTransform& transform = transforms[frame*numTracks + boneIdx];
 		SetTransformRotation(transform, q);
 	}
 }
-static void SetTransformScaleRange( hkArray<hkQsTransform>& transforms, int nbones, int boneIdx
+static void SetTransformScaleRange( hkArray<hkQsTransform>& transforms, int numTracks, int boneIdx
 									  , float &currentTime, float lastTime, int &frame
 									  , FloatKey &first, FloatKey &last)
 {
-	int n = transforms.getSize()/nbones;
+	int n = transforms.getSize()/numTracks;
 	for ( ; COMPARE(currentTime, lastTime) <= 0 && frame < n; currentTime += FramesIncrement, ++frame)
 	{
-		hkQsTransform& transform = transforms[frame*nbones + boneIdx];
+		hkQsTransform& transform = transforms[frame*numTracks + boneIdx];
 		SetTransformScale(transform, first.data);
 	}
 }
@@ -520,7 +597,21 @@ bool AnimationExport::exportController()
 {
 	vector<Niflib::ControllerLink> blocks = seq->GetControlledBlocks();
 	int nbones = skeleton->m_bones.getSize();
+
+	// Remove bones not children of root.  This is a bit of a kludge.  
+	//  Basically search for the first node after the root which also has no parent
+	//  This is typically Camera3. We then truncate racks to exclude nodes appearing after.
+	for (int i=1; i<nbones; ++i)
+	{
+		if (skeleton->m_parentIndices[i] < 0)
+		{
+			nbones = i;
+			break;
+		}
+	}
+
 	int numTracks = nbones;
+
 	float duration = seq->GetStopTime() - seq->GetStartTime();
 	int nframes = (int)ceil(duration / FramesIncrement);
 
@@ -528,7 +619,7 @@ bool AnimationExport::exportController()
 
 	hkRefPtr<hkaInterleavedUncompressedAnimation> tempAnim = new hkaInterleavedUncompressedAnimation();
 	tempAnim->m_duration = duration;
-	tempAnim->m_numberOfTransformTracks = nbones;
+	tempAnim->m_numberOfTransformTracks = numTracks;
 	tempAnim->m_numberOfFloatTracks = 0;//anim->m_numberOfFloatTracks;
 	tempAnim->m_transforms.setSize(numTracks*nframes, hkQsTransform::getIdentity());
 	tempAnim->m_floats.setSize(tempAnim->m_numberOfFloatTracks);
@@ -536,7 +627,8 @@ bool AnimationExport::exportController()
 
 	hkArray<hkQsTransform>& transforms = tempAnim->m_transforms;
 
-	map<string, int> boneMap;
+	typedef map<string, int, ltstr> StringIntMap;
+	StringIntMap boneMap;
 	for (int i=0; i<nbones; ++i)
 	{
 		string name = skeleton->m_bones[i].m_name;
@@ -545,7 +637,7 @@ bool AnimationExport::exportController()
 
 	for ( vector<Niflib::ControllerLink>::iterator bitr = blocks.begin(); bitr != blocks.end(); ++bitr)
 	{
-		map<string, int>::iterator boneitr = boneMap.find((*bitr).nodeName);
+		StringIntMap::iterator boneitr = boneMap.find((*bitr).nodeName);
 		if (boneitr == boneMap.end())
 		{
 			Log::Warn("Unknown bone '%s' found in animation. Skipping.", (*bitr).nodeName.c_str());
@@ -659,7 +751,8 @@ bool AnimationExport::exportController()
 	return true;
 }
 
-void ExportAnimations(const string& rootdir, const string& skelfile, const vector<string>& animlist, const string& outdir, Niflib::NifInfo& nifver, hkSerializeUtil::SaveOptionBits flags, bool norelativepath = false)
+void ExportAnimations(const string& rootdir, const string& skelfile, const vector<string>& animlist, const string& outdir
+					  , const hkPackfileWriter::Options& packFileOptions, hkSerializeUtil::SaveOptionBits flags, bool norelativepath = false)
 {
 	hkResource* skelResource = NULL;
 	hkResource* animResource = NULL;
@@ -758,12 +851,23 @@ void ExportAnimations(const string& rootdir, const string& skelfile, const vecto
 						PathRemoveFileSpec(outfiledir);
 						CreateDirectories(outfiledir);
 
-						Log::Info("Exporting '%s'", relout);
+						Log::Info("Exporting '%s'", outfile);
 						skelAnimCont->m_animations.pushBack(newBinding->m_animation);
 
-
 						hkOstream stream(outfile);
-						hkResult res = hkSerializeUtil::save( &rootCont, rootCont.staticClass(), stream.getStreamWriter(), flags );
+						hkResult res;
+						if ((flags & hkSerializeUtil::SAVE_TEXT_FORMAT) == 0)
+						{
+							res = hkSerializeUtil::savePackfile(&rootCont, rootCont.staticClass(), stream.getStreamWriter(), packFileOptions, NULL, flags);
+						}
+						else
+						{
+							res = hkSerializeUtil::save( &rootCont, rootCont.staticClass(), stream.getStreamWriter(), flags );
+						}
+						if ( res != HK_SUCCESS )
+						{
+							Log::Error("Havok reports save failed.");
+						}
 					}
 					else
 					{
@@ -778,33 +882,9 @@ void ExportAnimations(const string& rootdir, const string& skelfile, const vecto
 	if (skelResource) skelResource->removeReference();
 }
 //////////////////////////////////////////////////////////////////////////
-namespace {
-	EnumLookupType SaveFlags[] = 
-	{
-		{hkSerializeUtil::SAVE_DEFAULT,                   "SAVE_DEFAULT"},
-		{hkSerializeUtil::SAVE_TEXT_FORMAT,               "SAVE_TEXT_FORMAT"},
-		{hkSerializeUtil::SAVE_SERIALIZE_IGNORED_MEMBERS, "SAVE_SERIALIZE_IGNORED_MEMBERS"},
-		{hkSerializeUtil::SAVE_WRITE_ATTRIBUTES,          "SAVE_WRITE_ATTRIBUTES"},
-		{hkSerializeUtil::SAVE_CONCISE,                   "SAVE_CONCISE"},
-		{hkSerializeUtil::SAVE_TEXT_NUMBERS,              "SAVE_TEXT_NUMBERS"},
-		{0, NULL}
-	};
 
-	EnumLookupType LogFlags[] = 
-	{
-		{LOG_NONE,   "NONE"},
-		{LOG_ALL,    "ALL"},
-		{LOG_VERBOSE,"VERBOSE"},
-		{LOG_DEBUG,  "DEBUG"},
-		{LOG_INFO,   "INFO"},
-		{LOG_WARN,   "WARN"},
-		{LOG_ERROR,  "ERROR"},
-		{0, NULL}
-	};
-}
-
-
-static void ExportProject( const string &projfile, const char * rootPath, const char * outdir, Niflib::NifInfo& nifver, hkSerializeUtil::SaveOptionBits flags, bool recursion)
+static void ExportProject( const string &projfile, const char * rootPath, const char * outdir
+						  , const hkPackfileWriter::Options& packFileOptions, hkSerializeUtil::SaveOptionBits flags, bool recursion)
 {
 	vector<string> skelfiles, animfiles;
 	char projpath[MAX_PATH], skelpath[MAX_PATH], animpath[MAX_PATH];
@@ -843,7 +923,7 @@ static void ExportProject( const string &projfile, const char * rootPath, const 
 	}
 	else
 	{
-		ExportAnimations(string(rootPath), skelfiles[0],animfiles, outdir, nifver, flags, false);
+		ExportAnimations(string(rootPath), skelfiles[0],animfiles, outdir, packFileOptions, flags, false);
 	}
 }
 
@@ -859,11 +939,8 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 	vector<string> paths;
 	int argc = cmdLine.argc;
 	char **argv = cmdLine.argv;
-	hkSerializeUtil::SaveOptionBits flags = (hkSerializeUtil::SaveOptionBits)(hkSerializeUtil::SAVE_TEXT_FORMAT|hkSerializeUtil::SAVE_TEXT_NUMBERS);
-	Niflib::NifInfo nifver;
-	nifver.version = VER_20_2_0_7;
-	nifver.userVersion = 11;
-	nifver.userVersion2 = 83;
+	hkPackFormat pkFormat = HKPF_DEFAULT;
+	hkSerializeUtil::SaveOptionBits flags = hkSerializeUtil::SAVE_DEFAULT;
 
 #pragma region Handle Input Args
 	for (int i = 0; i < argc; i++)
@@ -893,55 +970,20 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 				recursion = false;
 				break;
 
+
 			case 'v':
-			 {
-				 const char *param = arg+2;
-				 if (*param == ':' || *param=='=') ++param;
-				 argv[i] = NULL;
-				 if ( param[0] == 0 && ( i+1<argc && ( argv[i+1][0] != '-' || argv[i+1][0] != '/' ) ) ) {
-					 param = argv[++i];
-					 argv[i] = NULL;
-				 }
-				 if ( param[0] == 0 )
-					 break;
-				 nifver.version = Niflib::ParseVersionString(string(param));
-				 nifver.userVersion = 0;
-				 nifver.userVersion = 0;
-			 }
-			 break;
-
-			case 'u':
-			 {
-				 const char *param = arg+2;
-				 if (*param == ':' || *param=='=') ++param;
-				 argv[i] = NULL;
-				 if ( param[0] == 0 && ( i+1<argc && ( argv[i+1][0] != '-' || argv[i+1][0] != '/' ) ) ) {
-					 param = argv[++i];
-					 argv[i] = NULL;
-				 }
-				 if ( param[0] == 0 )
-					 break;
-				 char *end;
-				 nifver.userVersion = strtol(param, &end, 0);
-				 nifver.userVersion2 = 0;
-			 }
-			 break;
-
-			case 'u2':
-			 {
-				 const char *param = arg+2;
-				 if (*param == ':' || *param=='=') ++param;
-				 argv[i] = NULL;
-				 if ( param[0] == 0 && ( i+1<argc && ( argv[i+1][0] != '-' || argv[i+1][0] != '/' ) ) ) {
-					 param = argv[++i];
-					 argv[i] = NULL;
-				 }
-				 if ( param[0] == 0 )
-					 break;
-				 char *end;
-				 nifver.userVersion2 = strtol(param, &end, 0);
-			 }
-			 break;
+				{
+					const char *param = arg+2;
+					if (*param == ':' || *param=='=') ++param;
+					argv[i] = NULL;
+					if ( param[0] == 0 && ( i+1<argc && ( argv[i+1][0] != '-' || argv[i+1][0] != '/' ) ) ) {
+						param = argv[++i];
+						argv[i] = NULL;
+					}
+					if ( param[0] == 0 )
+						break;
+					pkFormat = (hkPackFormat)StringToEnum(param, PackFlags, HKPF_DEFAULT);
+				} break;
 
 			case 'd':
 				{
@@ -1015,6 +1057,13 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 	hkMemoryRouter* memoryRouter = hkMemoryInitUtil::initDefault( &baseMalloc, hkMemorySystem::FrameInfo(1024 * 1024) );
 	hkBaseSystem::init( memoryRouter, errorReport );
 
+	if (pkFormat == HKPF_XML) // set text format to indicate xml
+	{
+		flags = (hkSerializeUtil::SaveOptionBits)(flags | hkSerializeUtil::SAVE_TEXT_FORMAT);
+	}
+	hkPackfileWriter::Options packFileOptions = GetWriteOptionsFromFormat(pkFormat);
+	
+
 	// search for projects and guess the layout
 	if (PathIsDirectory(paths[0].c_str()))
 	{
@@ -1059,7 +1108,7 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 		for (vector<string>::iterator itr = files.begin(); itr != files.end(); ++itr)
 		{
 			string projfile = (*itr).c_str();
-			ExportProject(projfile, rootPath, outdir, nifver, flags, recursion);
+			ExportProject(projfile, rootPath, outdir, packFileOptions, flags, recursion);
 		}
 	}
 	else
@@ -1091,7 +1140,7 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 				} else { 
 					strcpy(outdir, rootPath); 
 				}
-				ExportProject(skelpath, rootPath, outdir, nifver, flags, recursion);
+				ExportProject(skelpath, rootPath, outdir, packFileOptions, flags, recursion);
 			}
 		}
 		else
@@ -1122,7 +1171,7 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 						PathRemoveFileSpec(tempdir);
 						PathCombine(animDir, tempdir, "..\animations");
 						PathAddBackslash(animDir);
-						ExportProject(skelpath, rootPath, rootPath, nifver, flags, recursion);
+						ExportProject(skelpath, rootPath, rootPath, packFileOptions, flags, recursion);
 					}
 					else if (paths.size() == 2) // second path will be output
 					{
@@ -1134,7 +1183,7 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 						PathCombine(rootPath,tempdir,"..\\animations");
 						GetFullPathName(rootPath, MAX_PATH, rootPath, NULL);
 						GetFullPathName(outdir, MAX_PATH, outdir, NULL);
-						ExportProject(skelpath, rootPath, outdir, nifver, flags, recursion);
+						ExportProject(skelpath, rootPath, outdir, packFileOptions, flags, recursion);
 					}
 					else // second path is animation, third is output
 					{
@@ -1162,7 +1211,7 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 								strcpy(outdir, rootPath); 
 							}
 
-							ExportAnimations(string(rootPath), skelpath, animfiles, outdir, nifver, flags, norelativepath);
+							ExportAnimations(string(rootPath), skelpath, animfiles, outdir, packFileOptions, flags, norelativepath);
 						}
 
 					}

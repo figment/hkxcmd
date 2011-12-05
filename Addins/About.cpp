@@ -1,21 +1,20 @@
 #include "stdafx.h"
 
 #include "hkxcmd.h"
+#include "log.h"
 using namespace std;
 
 static void HelpString(hkxcmd::HelpType type){
    switch (type)
    {
-   case hkxcmd::htShort: cout << "About - Help about this program."; break;
+   case hkxcmd::htShort: Log::Info("About - Help about this program."); break;
    case hkxcmd::htLong:  
       {
          char fullName[MAX_PATH], exeName[MAX_PATH];
          GetModuleFileName(NULL, fullName, MAX_PATH);
          _splitpath(fullName, NULL, NULL, exeName, NULL);
-         cout << "Usage: " << exeName << " about" << endl 
-              << "  About this program." << endl
-              << endl
-            ;
+         Log::Info("Usage: %s about", exeName);
+		 Log::Info("  Prints additional information about this program.");
       }
       break;
    }

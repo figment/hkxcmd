@@ -274,16 +274,15 @@ static hkPackfileWriter::Options GetWriteOptionsFromFormat(hkPackFormat format)
 static void HelpString(hkxcmd::HelpType type){
 	switch (type)
 	{
-	case hkxcmd::htShort: Log::Info("ExportKF - Convert Havok HKX animation to Gamebryo KF animation."); break;
+	case hkxcmd::htShort: Log::Info("Retarget - Convert Havok HKX animation to Gamebryo HKX animation using another skeleton"); break;
 	case hkxcmd::htLong:  
 		{
 			char fullName[MAX_PATH], exeName[MAX_PATH];
 			GetModuleFileName(NULL, fullName, MAX_PATH);
 			_splitpath(fullName, NULL, NULL, exeName, NULL);
 
-			Log::Info("Usage: %s ExportKF [-opts[modifiers]] [skel.hkx] [anim.kf] [anim.hkx]", exeName); 
-			Log::Info("  Convert Gamebryo KF animation to Havok HKX animation" );
-			Log::Info("  If a folder is specified then the folder will be searched for any projects and convert those." );
+			Log::Info("Usage: %s Retarget [-opts[modifiers]] [baseskel.hkx] [anim.hkx] [output_anim.hkx]", exeName); 
+			Log::Info("  Convert Havok HKX animation to Gamebryo HKX animation using another skeleton" );
 			Log::Info("");
 			Log::Info("<Options>" );
 			Log::Info("  skel.hkx      Path to Havok skeleton for animation binding." );

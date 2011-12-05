@@ -125,7 +125,7 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////
 // Enumeration Types
 //////////////////////////////////////////////////////////////////////////
-
+namespace {
 enum {
 	IPOS_X_REF	=	0,
 	IPOS_Y_REF	=	1,
@@ -142,7 +142,54 @@ enum AccumType
 	AT_XYZ = AT_X | AT_Y | AT_Z,
 	AT_FORCE = 0x80000000,
 };
+enum hkPackFormat
+{
+	HKPF_XML,
+	HKPF_DEFAULT,
+	HKPF_WIN32,
+	HKPF_AMD64,
+	HKPF_XBOX,
+	HKPF_XBOX360,
+};
 
+static 
+EnumLookupType SaveFlags[] = 
+{
+	{hkSerializeUtil::SAVE_DEFAULT,                   "SAVE_DEFAULT"},
+	{hkSerializeUtil::SAVE_TEXT_FORMAT,               "SAVE_TEXT_FORMAT"},
+	{hkSerializeUtil::SAVE_SERIALIZE_IGNORED_MEMBERS, "SAVE_SERIALIZE_IGNORED_MEMBERS"},
+	{hkSerializeUtil::SAVE_WRITE_ATTRIBUTES,          "SAVE_WRITE_ATTRIBUTES"},
+	{hkSerializeUtil::SAVE_CONCISE,                   "SAVE_CONCISE"},
+	{hkSerializeUtil::SAVE_TEXT_NUMBERS,              "SAVE_TEXT_NUMBERS"},
+	{0, NULL}
+};
+
+static 
+EnumLookupType LogFlags[] = 
+{
+	{LOG_NONE,   "NONE"},
+	{LOG_ALL,    "ALL"},
+	{LOG_VERBOSE,"VERBOSE"},
+	{LOG_DEBUG,  "DEBUG"},
+	{LOG_INFO,   "INFO"},
+	{LOG_WARN,   "WARN"},
+	{LOG_ERROR,  "ERROR"},
+	{0, NULL}
+};
+
+static 
+EnumLookupType PackFlags[] = 
+{
+	{HKPF_XML,   "XML"},
+	{HKPF_DEFAULT, "DEFAULT"},
+	{HKPF_WIN32, "WIN32"},
+	{HKPF_AMD64, "AMD64"},
+	{HKPF_XBOX,  "XBOX"},
+	{HKPF_XBOX360, "XBOX360"},
+	{0, NULL}
+};
+
+}
 //////////////////////////////////////////////////////////////////////////
 // Constants
 //////////////////////////////////////////////////////////////////////////
@@ -151,7 +198,6 @@ const unsigned int IntegerInf = 0x7f7fffff;
 const unsigned int IntegerNegInf = 0xff7fffff;
 const float FloatINF = *(float*)&IntegerInf;
 const float FloatNegINF = *(float*)&IntegerNegInf;
-
 //////////////////////////////////////////////////////////////////////////
 // Structures
 //////////////////////////////////////////////////////////////////////////
@@ -234,7 +280,7 @@ bool AnimationExport::exportNotes( )
 {
 	vector<StringKey> textKeys;
 
-
+#if 0
 	NiTextKeyExtraDataRef textKeyData = new NiTextKeyExtraData();
 	seq->SetTextKey(textKeyData);
 
@@ -267,6 +313,7 @@ bool AnimationExport::exportNotes( )
 	}
 
 	textKeyData->SetKeys(textKeys);
+#endif
 	return true;
 }
 
@@ -382,8 +429,7 @@ bool AnimationExport::exportController()
 		boneData.lastScale = interp->GetScale();
 	}
 
-
-	for (hkReal time = startTime; time<anim->m_duration; time += incrFrame)
+	for (hkReal time = startTime; time<=anim->m_duration; time += incrFrame)
 	{
 		//hkUint32 uiAnnotations = anim->getNumAnnotations(time, incrFrame);
 		//hkUint32 nAnnotations = anim->getAnnotations(time, incrFrame, annotations.begin(), nbones);
@@ -406,7 +452,7 @@ bool AnimationExport::exportController()
 
 			QuatKey qk;
 			qk.time = time;
-			qk.data = TOQUAT(transform.getRotation());
+			qk.data = TOQUAT(transform.getRotation()).Normalized();
 			if (!EQUALS(qk.data,data.lastRotate))
 			{
 				data.rot.push_back(qk);
@@ -449,6 +495,21 @@ bool AnimationExport::exportController()
 		{
 			seq->AddController(data.name, data.transCont);
 		}
+	}
+
+	// Add some text keys for easier export from max
+	{
+		NiTextKeyExtraDataRef textKeys = new NiTextKeyExtraData();
+		vector<StringKey> keys;
+		StringKey first, last;
+		first.time = 0.0; first.data = "start";
+		last.time = duration; last.data = "end";
+		keys.push_back( first );
+		keys.push_back(last);
+		textKeys->SetKeys(keys);
+		seq->SetTextKeysName("Annotations");
+		seq->SetTextKeys(textKeys);
+		seq->SetTextKey(textKeys);
 	}
 
 	// remove controllers now
@@ -592,19 +653,6 @@ void ExportAnimations(const string& rootdir, const string& skelfile, const vecto
 	if (skelResource) skelResource->removeReference();
 }
 //////////////////////////////////////////////////////////////////////////
-namespace {
-EnumLookupType LogFlags[] = 
-{
-	{LOG_NONE,   "NONE"},
-	{LOG_ALL,    "ALL"},
-	{LOG_VERBOSE,"VERBOSE"},
-	{LOG_DEBUG,  "DEBUG"},
-	{LOG_INFO,   "INFO"},
-	{LOG_WARN,   "WARN"},
-	{LOG_ERROR,  "ERROR"},
-	{0, NULL}
-};
-}
 
 static void HelpString(hkxcmd::HelpType type){
 	switch (type)

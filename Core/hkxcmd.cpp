@@ -140,9 +140,8 @@ void hkxcmd::PrintHelp()
 
    for (hkxcmdListType::iterator itr = hkxcmdList.begin(), end = hkxcmdList.end(); itr != end; ++itr){
       hkxcmd* p = (*itr);
-      Log::Info("  %-13s ", p->Name.c_str());
+	  fputs("  ", stderr);
       p->HelpCmd(htShort);
-	  Log::Info("");
    }
    Log::Info("");
    Log::Info("<Global Switches>");
