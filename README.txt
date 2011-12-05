@@ -125,6 +125,8 @@ Known Issues:
     converting to FBX format instead but that is much more work but
     would presumably have broader support.
     
+  - There is no handling for visbility or camera tracks which seem to be used
+    
 Change Log:
   1.3
    * Change ExportKF to add "start" and "end" note tracks on root node for later export

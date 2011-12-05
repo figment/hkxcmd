@@ -487,8 +487,8 @@ namespace {
 	}
 
 	const float FramesPerSecond = 30.0f;
-	const float FramesIncrement = 0.0325f;
-
+	//const float FramesIncrement = 0.0325f;
+	const float FramesIncrement = 0.033333f;
 }
 
 struct BoneDataReference
