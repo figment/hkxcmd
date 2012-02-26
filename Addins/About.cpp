@@ -23,7 +23,7 @@ static void HelpString(hkxcmd::HelpType type){
 
 static bool ExecuteCmd(hkxcmdLine &cmdLine)
 {
-   cout << "Copyright (c) 2011" << endl
+   cout << "Copyright (c) 2012" << endl
         << "All rights reserved." << endl
         << endl;
    cout <<

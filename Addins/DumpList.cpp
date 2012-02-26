@@ -2,6 +2,7 @@
 
 #include "hkxcmd.h"
 #include "hkxutils.h"
+#include "hkfutils.h"
 #include "log.h"
 #include <cstdio>
 #include <sys/stat.h>
@@ -36,29 +37,6 @@
 // Serialize
 #include <Common/Serialize/Util/hkSerializeUtil.h>
 
-#pragma comment (lib, "hkBase.lib")
-#pragma comment (lib, "hkSerialize.lib")
-#pragma comment (lib, "hkSceneData.lib")
-#pragma comment (lib, "hkInternal.lib")
-#pragma comment (lib, "hkGeometryUtilities.lib")
-#pragma comment (lib, "hkVisualize.lib")
-#pragma comment (lib, "hkCompat.lib")
-#pragma comment (lib, "hkpCollide.lib")
-#pragma comment (lib, "hkpConstraintSolver.lib")
-#pragma comment (lib, "hkpDynamics.lib")
-#pragma comment (lib, "hkpInternal.lib")
-#pragma comment (lib, "hkpUtilities.lib")
-#pragma comment (lib, "hkpVehicle.lib")
-#pragma comment (lib, "hkaAnimation.lib")
-#pragma comment (lib, "hkaRagdoll.lib")
-#pragma comment (lib, "hkaInternal.lib")
-#pragma comment (lib, "hkgBridge.lib")
-
-#define RETURN_FAIL_IF(COND, MSG) \
-	HK_MULTILINE_MACRO_BEGIN \
-	if(COND) { HK_ERROR(0x53a6a026, MSG); return 1; } \
-	HK_MULTILINE_MACRO_END
-
 using namespace std;
 
 static void HelpString(hkxcmd::HelpType type){
@@ -78,68 +56,8 @@ static void HelpString(hkxcmd::HelpType type){
 			Log::Info(" -i <path>          Input File or directory");
 			Log::Info(" -o <path>          Output File - Defaults to input file with '-out' appended");
 			Log::Info("");
-			Log::Info(" -f <flags>         Havok saving flags (Defaults:  SAVE_TEXT_FORMAT|SAVE_TEXT_NUMBERS)");
-			Log::Info("     SAVE_DEFAULT           = All flags default to OFF, enable whichever are needed");
-			Log::Info("     SAVE_TEXT_FORMAT       = Use text (usually XML) format, default is binary format if available.");
-			Log::Info("     SAVE_SERIALIZE_IGNORED_MEMBERS = Write members which are usually ignored.");
-			Log::Info("     SAVE_WRITE_ATTRIBUTES  = Include extended attributes in metadata, default is to write minimum metadata.");
-			Log::Info("     SAVE_CONCISE           = Doesn't provide any extra information which would make the file easier to interpret. ");
-			Log::Info("                              E.g. additionally write hex floats as text comments.");
-			Log::Info("     SAVE_TEXT_NUMBERS      = Floating point numbers output as text, not as binary.  ");
-			Log::Info("                              Makes them easily readable/editable, but values may not be exact.");
-			Log::Info("");
-				;
 		}
 		break;
-	}
-}
-
-namespace
-{
-
-	EnumLookupType SaveFlags[] = 
-	{
-		{hkSerializeUtil::SAVE_DEFAULT,                   "SAVE_DEFAULT"},
-		{hkSerializeUtil::SAVE_TEXT_FORMAT,               "SAVE_TEXT_FORMAT"},
-		{hkSerializeUtil::SAVE_SERIALIZE_IGNORED_MEMBERS, "SAVE_SERIALIZE_IGNORED_MEMBERS"},
-		{hkSerializeUtil::SAVE_WRITE_ATTRIBUTES,          "SAVE_WRITE_ATTRIBUTES"},
-		{hkSerializeUtil::SAVE_CONCISE,                   "SAVE_CONCISE"},
-		{hkSerializeUtil::SAVE_TEXT_NUMBERS,              "SAVE_TEXT_NUMBERS"},
-		{0, NULL}
-	};
-
-	EnumLookupType LogFlags[] = 
-	{
-		{LOG_NONE,   "NONE"},
-		{LOG_ALL,    "ALL"},
-		{LOG_VERBOSE,"VERBOSE"},
-		{LOG_DEBUG,  "DEBUG"},
-		{LOG_INFO,   "INFO"},
-		{LOG_WARN,   "WARN"},
-		{LOG_ERROR,  "ERROR"},
-		{0, NULL}
-	};
-}
-
-static void HK_CALL errorReport(const char* msg, void* userContext)
-{
-	Log::Error("%s", msg);
-}
-
-static hkResource* hkSerializeUtilLoad( hkStreamReader* stream
-								, hkSerializeUtil::ErrorDetails* detailsOut=HK_NULL
-								, const hkClassNameRegistry* classReg=HK_NULL
-								, hkSerializeUtil::LoadOptions options=hkSerializeUtil::LOAD_DEFAULT )
-{
-	__try
-	{
-		return hkSerializeUtil::load(stream, detailsOut, classReg, options);
-	}
-	__except (EXCEPTION_EXECUTE_HANDLER)
-	{
-		if (detailsOut == NULL)
-			detailsOut->id = hkSerializeUtil::ErrorDetails::ERRORID_LOAD_FAILED;
-		return NULL;
 	}
 }
 
@@ -292,6 +210,8 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 	// Need to have memory allocated for the solver. Allocate 1mb for it.
 	hkMemoryRouter* memoryRouter = hkMemoryInitUtil::initDefault( &baseMalloc, hkMemorySystem::FrameInfo(1024 * 1024) );
 	hkBaseSystem::init( memoryRouter, errorReport );
+   LoadDefaultRegistry();
+
 	{
 		for (vector<string>::iterator itr = files.begin(); itr != files.end(); ++itr)
 		{
@@ -349,93 +269,73 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 
 				hkIstream stream(infile);
 				hkStreamReader *reader = stream.getStreamReader();
-				hkSerializeUtil::FormatDetails detailsOut;
-				hkSerializeUtil::detectFormat( reader, detailsOut );
-				hkBool32 isLoadable = hkSerializeUtil::isLoadable( reader );
-				if (!isLoadable)
+            hkResource* resource = hkSerializeLoadResource(reader);
+				if (resource == NULL)
 				{
 					Log::Warn("File is not loadable: '%s'", relpath);
 				}
 				else
 				{
-					hkDynamicClassNameRegistry dynamicRegistry;
-					hkSerializeUtil::ErrorDetails detailsOut;
-					hkResource* resource = hkSerializeUtilLoad(reader, &detailsOut, &dynamicRegistry, hkSerializeUtil::LOAD_DEFAULT);
-					hkBool32 failed = true;
-					if (resource)
+					if (hkRootLevelContainer* scene = resource->getContents<hkRootLevelContainer>())
 					{
-						if (hkRootLevelContainer* scene = resource->getContents<hkRootLevelContainer>())
+						if (hkaAnimationContainer *skelAnimCont = scene->findObject<hkaAnimationContainer>())
 						{
-							if (hkaAnimationContainer *skelAnimCont = scene->findObject<hkaAnimationContainer>())
+							char path[MAX_PATH], drive[MAX_PATH], dir[MAX_PATH], fname[MAX_PATH], ext[MAX_PATH];
+							int nskel = skelAnimCont->m_skeletons.getSize();
+							if ( nskel == 0 )
 							{
-								char path[MAX_PATH], drive[MAX_PATH], dir[MAX_PATH], fname[MAX_PATH], ext[MAX_PATH];
-								int nskel = skelAnimCont->m_skeletons.getSize();
-								if ( nskel == 0 )
+								Log::Warn("No skeletons found in resource. Skipping '%s'", relpath);
+							}
+							else
+							{
+								if (nskel>1) Log::Info("Multiple skeletons found.");
+								for (int iskel=0; iskel<nskel; ++iskel)
 								{
-									Log::Warn("No skeletons found in resource. Skipping '%s'", relpath);
-								}
-								else
-								{
-									failed = false;
-
-									if (nskel>1) Log::Info("Multiple skeletons found.");
-									for (int iskel=0; iskel<nskel; ++iskel)
+									if (nskel>1)
 									{
-										if (nskel>1)
+										_splitpath(outfile, drive, dir, fname, ext);
+										sprintf(fname+strlen(fname), "-%d", iskel+1);
+										_makepath(path, drive, dir, fname, ext);
+									}
+									else
+									{
+										strcpy(path, outfile);
+									}
+
+									hkRefPtr<hkaSkeleton> skeleton = skelAnimCont->m_skeletons[0];
+									int nbones = skeleton->m_bones.getSize();
+									Log::Info("Exporting skeleton '%s' with %d bones to '%s'"
+										, skeleton->m_name, skeleton->m_bones.getSize(), PathFindFileName(path));
+
+									{
+										hkOstream stream(path);
+										for (int i=0; i<nbones; ++i)
 										{
-											_splitpath(outfile, drive, dir, fname, ext);
-											sprintf(fname+strlen(fname), "-%d", iskel+1);
-											_makepath(path, drive, dir, fname, ext);
+											string name = skeleton->m_bones[i].m_name;
+											stream.printf("%s\r\n", name.c_str());
 										}
-										else
+									}
+									if (!skeleton->m_floatSlots.isEmpty())
+									{
+										strcat(fname, "-floats");
+										_makepath(path, drive, dir, fname, ext);
+
+										Log::Info("Exporting skeleton '%s' with %d floats to '%s'"
+											, skeleton->m_name, skeleton->m_floatSlots.getSize(), PathFindFileName(path));
+
+										hkOstream stream(path);
+										for (int i=0, n=skeleton->m_floatSlots.getSize(); i<n; ++i)
 										{
-											strcpy(path, outfile);
-										}
-
-										hkRefPtr<hkaSkeleton> skeleton = skelAnimCont->m_skeletons[0];
-										int nbones = skeleton->m_bones.getSize();
-										Log::Info("Exporting skeleton '%s' with %d bones to '%s'"
-											, skeleton->m_name, skeleton->m_bones.getSize(), PathFindFileName(path));
-
-										{
-											hkOstream stream(path);
-											for (int i=0; i<nbones; ++i)
-											{
-												string name = skeleton->m_bones[i].m_name;
-												stream.printf("%s\r\n", name.c_str());
-											}
-										}
-										if (!skeleton->m_floatSlots.isEmpty())
-										{
-											strcat(fname, "-floats");
-											_makepath(path, drive, dir, fname, ext);
-
-											Log::Info("Exporting skeleton '%s' with %d floats to '%s'"
-												, skeleton->m_name, skeleton->m_floatSlots.getSize(), PathFindFileName(path));
-
-											hkOstream stream(path);
-											for (int i=0, n=skeleton->m_floatSlots.getSize(); i<n; ++i)
-											{
-												string name = skeleton->m_floatSlots[i];
-												stream.printf("%s\r\n", name.c_str());
-											}
+											string name = skeleton->m_floatSlots[i];
+											stream.printf("%s\r\n", name.c_str());
 										}
 									}
 								}
-
 							}
-						}
-						resource->removeReference();
 
-						if (failed)
-						{
-							Log::Error("Failed to save file '%s'", outfile);
 						}
 					}
-					else
-					{
-						Log::Error("Failed to load file '%s'", relpath);
-					}
+					resource->removeReference();
 				}
 			}
 			catch (...)

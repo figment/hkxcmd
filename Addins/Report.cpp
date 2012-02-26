@@ -2,6 +2,7 @@
 
 #include "hkxcmd.h"
 #include "hkxutils.h"
+#include "hkfutils.h"
 #include "log.h"
 #include <cstdio>
 #include <sys/stat.h>
@@ -40,59 +41,21 @@
 // Serialize
 #include <Common/Serialize/Util/hkSerializeUtil.h>
 
-#include "hkbProjectData_2.h"
-#include "hkbProjectStringData_1.h"
-
-#pragma comment (lib, "hkBase.lib")
-#pragma comment (lib, "hkSerialize.lib")
-#pragma comment (lib, "hkSceneData.lib")
-#pragma comment (lib, "hkInternal.lib")
-#pragma comment (lib, "hkGeometryUtilities.lib")
-#pragma comment (lib, "hkVisualize.lib")
-#pragma comment (lib, "hkCompat.lib")
-#pragma comment (lib, "hkpCollide.lib")
-#pragma comment (lib, "hkpConstraintSolver.lib")
-#pragma comment (lib, "hkpDynamics.lib")
-#pragma comment (lib, "hkpInternal.lib")
-#pragma comment (lib, "hkpUtilities.lib")
-#pragma comment (lib, "hkpVehicle.lib")
-#pragma comment (lib, "hkaAnimation.lib")
-#pragma comment (lib, "hkaRagdoll.lib")
-#pragma comment (lib, "hkaInternal.lib")
-#pragma comment (lib, "hkgBridge.lib")
-
-#define RETURN_FAIL_IF(COND, MSG) \
-	HK_MULTILINE_MACRO_BEGIN \
-	if(COND) { HK_ERROR(0x53a6a026, MSG); return 1; } \
-	HK_MULTILINE_MACRO_END
-
-using namespace std;
 
 static void HelpString(hkxcmd::HelpType type){
 	switch (type)
 	{
-	case hkxcmd::htShort: Log::Info("Test"); break;
+	case hkxcmd::htShort: Log::Info("Report - Generate a simple report for all supported Havok classes"); break;
 	case hkxcmd::htLong:  
 		{
 			char fullName[MAX_PATH], exeName[MAX_PATH];
 			GetModuleFileName(NULL, fullName, MAX_PATH);
 			_splitpath(fullName, NULL, NULL, exeName, NULL);
-			Log::Info("Usage: %s test [-opts[modifiers]] [infile] [outfile]", exeName);
-				Log::Info("  Simply read and write the file back out with specified format.");
+			Log::Info("Usage: %s report [-opts[modifiers]] [outdir]", exeName);
+				Log::Info("  Generate a simple report for all supported Havok classes");
 				Log::Info("");
 				Log::Info("<Switches>");
-				Log::Info(" -i <path>          Input File or directory");
-				Log::Info(" -o <path>          Output File - Defaults to input file with '-out' appended");
-				Log::Info("");
-				Log::Info(" -f <flags>         Havok saving flags (Defaults:  SAVE_TEXT_FORMAT|SAVE_TEXT_NUMBERS)");
-				Log::Info("     SAVE_DEFAULT           = All flags default to OFF, enable whichever are needed");
-				Log::Info("     SAVE_TEXT_FORMAT       = Use text (usually XML) format, default is binary format if available.");
-				Log::Info("     SAVE_SERIALIZE_IGNORED_MEMBERS = Write members which are usually ignored.");
-				Log::Info("     SAVE_WRITE_ATTRIBUTES  = Include extended attributes in metadata, default is to write minimum metadata.");
-				Log::Info("     SAVE_CONCISE           = Doesn't provide any extra information which would make the file easier to interpret. ");
-				Log::Info("                              E.g. additionally write hex floats as text comments.");
-				Log::Info("     SAVE_TEXT_NUMBERS      = Floating point numbers output as text, not as binary.  ");
-				Log::Info("                              Makes them easily readable/editable, but values may not be exact.");
+				Log::Info(" -o <path>     Output Directory - ");
 				Log::Info("");
 				;
 		}
@@ -100,159 +63,9 @@ static void HelpString(hkxcmd::HelpType type){
 	}
 }
 
-namespace
-{
-
-	EnumLookupType SaveFlags[] = 
-	{
-		{hkSerializeUtil::SAVE_DEFAULT,                   "SAVE_DEFAULT"},
-		{hkSerializeUtil::SAVE_TEXT_FORMAT,               "SAVE_TEXT_FORMAT"},
-		{hkSerializeUtil::SAVE_SERIALIZE_IGNORED_MEMBERS, "SAVE_SERIALIZE_IGNORED_MEMBERS"},
-		{hkSerializeUtil::SAVE_WRITE_ATTRIBUTES,          "SAVE_WRITE_ATTRIBUTES"},
-		{hkSerializeUtil::SAVE_CONCISE,                   "SAVE_CONCISE"},
-		{hkSerializeUtil::SAVE_TEXT_NUMBERS,              "SAVE_TEXT_NUMBERS"},
-		{0, NULL}
-	};
-
-	EnumLookupType LogFlags[] = 
-	{
-		{LOG_NONE,   "NONE"},
-		{LOG_ALL,    "ALL"},
-		{LOG_VERBOSE,"VERBOSE"},
-		{LOG_DEBUG,  "DEBUG"},
-		{LOG_INFO,   "INFO"},
-		{LOG_WARN,   "WARN"},
-		{LOG_ERROR,  "ERROR"},
-		{0, NULL}
-	};
-}
-
-
-extern "C" void PrintV(FILE* hFile, LPCSTR lpszFormat, va_list argptr)
-{
-   vfprintf_s(hFile, lpszFormat, argptr);
-}
-
-extern "C" void PrintLineV(FILE* hFile, LPCSTR lpszFormat, va_list argptr)
-{
-   PrintV(hFile, lpszFormat, argptr);
-   fprintf_s(hFile, "\n");
-}
-
-extern "C" void PrintLine(FILE* hFile, LPCSTR lpszFormat, ...)
-{
-   va_list argList;
-   va_start(argList, lpszFormat);
-   PrintLineV(hFile, lpszFormat, argList);
-   va_end(argList);
-}
-
-extern "C" void Print(FILE* hFile, LPCSTR lpszFormat, ...)
-{
-   va_list argList;
-   va_start(argList, lpszFormat);
-   PrintV(hFile, lpszFormat, argList);
-   va_end(argList);
-}
-
-
-EnumLookupType TypeEnums[] = 
-{
-   {hkClassMember::TYPE_VOID, 	"hkClassMember::TYPE_VOID"},
-   {hkClassMember::TYPE_BOOL, 	"hkClassMember::TYPE_BOOL"},
-   {hkClassMember::TYPE_CHAR, 	"hkClassMember::TYPE_CHAR"},
-   {hkClassMember::TYPE_INT8, 	"hkClassMember::TYPE_INT8"},
-   {hkClassMember::TYPE_UINT8, 	"hkClassMember::TYPE_UINT8"},
-   {hkClassMember::TYPE_INT16, 	"hkClassMember::TYPE_INT16"},
-   {hkClassMember::TYPE_UINT16, 	"hkClassMember::TYPE_UINT16"},
-   {hkClassMember::TYPE_INT32, 	"hkClassMember::TYPE_INT32"},
-   {hkClassMember::TYPE_UINT32, 	"hkClassMember::TYPE_UINT32"},
-   {hkClassMember::TYPE_INT64, 	"hkClassMember::TYPE_INT64"},
-   {hkClassMember::TYPE_UINT64, 	"hkClassMember::TYPE_UINT64"},
-   {hkClassMember::TYPE_REAL, 	"hkClassMember::TYPE_REAL"},
-   {hkClassMember::TYPE_VECTOR4, 	"hkClassMember::TYPE_VECTOR4"},
-   {hkClassMember::TYPE_QUATERNION, 	"hkClassMember::TYPE_QUATERNION"},
-   {hkClassMember::TYPE_MATRIX3, 	"hkClassMember::TYPE_MATRIX3"},
-   {hkClassMember::TYPE_ROTATION, 	"hkClassMember::TYPE_ROTATION"},
-   {hkClassMember::TYPE_QSTRANSFORM, 	"hkClassMember::TYPE_QSTRANSFORM"},
-   {hkClassMember::TYPE_MATRIX4, 	"hkClassMember::TYPE_MATRIX4"},
-   {hkClassMember::TYPE_TRANSFORM, 	"hkClassMember::TYPE_TRANSFORM"},
-   {hkClassMember::TYPE_ZERO, 	"hkClassMember::TYPE_ZERO"},
-   {hkClassMember::TYPE_POINTER, 	"hkClassMember::TYPE_POINTER"},
-   {hkClassMember::TYPE_FUNCTIONPOINTER, 	"hkClassMember::TYPE_FUNCTIONPOINTER"},
-   {hkClassMember::TYPE_ARRAY, 	"hkClassMember::TYPE_ARRAY"},
-   {hkClassMember::TYPE_INPLACEARRAY, 	"hkClassMember::TYPE_INPLACEARRAY"},
-   {hkClassMember::TYPE_ENUM, 	"hkClassMember::TYPE_ENUM"},
-   {hkClassMember::TYPE_STRUCT, 	"hkClassMember::TYPE_STRUCT"},
-   {hkClassMember::TYPE_SIMPLEARRAY, 	"hkClassMember::TYPE_SIMPLEARRAY"},
-   {hkClassMember::TYPE_HOMOGENEOUSARRAY, 	"hkClassMember::TYPE_HOMOGENEOUSARRAY"},
-   {hkClassMember::TYPE_VARIANT, 	"hkClassMember::TYPE_VARIANT"},
-   {hkClassMember::TYPE_CSTRING, 	"hkClassMember::TYPE_CSTRING"},
-   {hkClassMember::TYPE_ULONG, 	"hkClassMember::TYPE_ULONG"},
-   {hkClassMember::TYPE_FLAGS, 	"hkClassMember::TYPE_FLAGS"},
-   {hkClassMember::TYPE_HALF, 	"hkClassMember::TYPE_HALF"},
-   {hkClassMember::TYPE_STRINGPTR, 	"hkClassMember::TYPE_STRINGPTR"},
-   {hkClassMember::TYPE_RELARRAY, 	"hkClassMember::TYPE_RELARRAY"},
-   {0, NULL}
-};
-
-EnumLookupType CTypeEnums[] = 
-{
-   {hkClassMember::TYPE_VOID, 	"hkRefVariant"},
-   {hkClassMember::TYPE_BOOL, 	"hkBool"},
-   {hkClassMember::TYPE_CHAR, 	"hkChar"},
-   {hkClassMember::TYPE_INT8, 	"hkInt8"},
-   {hkClassMember::TYPE_UINT8, 	"hkUint8"},
-   {hkClassMember::TYPE_INT16, 	"hkInt16"},
-   {hkClassMember::TYPE_UINT16, 	"hkUint16"},
-   {hkClassMember::TYPE_INT32, 	"hkInt32"},
-   {hkClassMember::TYPE_UINT32, 	"hkUint32"},
-   {hkClassMember::TYPE_INT64, 	"hkInt64"},
-   {hkClassMember::TYPE_UINT64, 	"hkUint64"},
-   {hkClassMember::TYPE_REAL, 	"hkReal"},
-   {hkClassMember::TYPE_VECTOR4, 	"hkVector4"},
-   {hkClassMember::TYPE_QUATERNION, 	"hkQuaternion"},
-   {hkClassMember::TYPE_MATRIX3, 	"hkMatrix3"},
-   {hkClassMember::TYPE_ROTATION, 	"hkRotation"},
-   {hkClassMember::TYPE_QSTRANSFORM, 	"hkQsTransform"},
-   {hkClassMember::TYPE_MATRIX4, 	"hkMatrix4"},
-   {hkClassMember::TYPE_TRANSFORM, 	"hkTransform"},
-   {hkClassMember::TYPE_ENUM, 	"enum unknown"},
-   {hkClassMember::TYPE_VARIANT, 	"hkRefVariant"},
-   {hkClassMember::TYPE_CSTRING, 	"char*"},
-   {hkClassMember::TYPE_ULONG, 	"hkUlong"},
-   {hkClassMember::TYPE_FLAGS, 	"hkFlags"},
-   {hkClassMember::TYPE_HALF, 	"hkHalf"},
-   {hkClassMember::TYPE_STRINGPTR, 	"hkStringPtr"},
-   {0, NULL}
-};
-
-
-EnumLookupType TypeFlags[] = 
-{
-   {hkClassMember::FLAGS_NONE, 	"hkClassMember::FLAGS_NONE"},
-   {hkClassMember::ALIGN_8, 	"hkClassMember::ALIGN_8"},
-   {hkClassMember::ALIGN_16, 	"hkClassMember::ALIGN_16"},
-   {hkClassMember::NOT_OWNED, 	"hkClassMember::NOT_OWNED"},
-   {hkClassMember::SERIALIZE_IGNORED, 	"hkClassMember::SERIALIZE_IGNORED"},
-   {0, NULL}
-};
-
-string replaceSubstring(string instr, string match, string repl) {
-
-   string retval = instr;
-   for (int pos = retval.find(match, 0); pos != string::npos; pos = retval.find(match, 0)) 
-   {
-      retval.erase(pos, match.length());
-      retval.insert(pos, repl);
-   }
-   return retval;
-}
-
 extern LPCSTR LookupClassHeader(LPCSTR name);
 
 static char s_rootPath[256] = "D:\\temp\\havok";
-
 void SetRootPath(LPCSTR path)
 {
    strcpy_s(s_rootPath, 256, path);
@@ -760,45 +573,6 @@ void HK_CALL DumpClassesAll()
    DumpHavokClassesByAddress(const_cast<hkClass**>(const_cast<hkClass * const *>(&hkBuiltinTypeRegistry::StaticLinkedClasses[0])));
 }
 
-enum hkPackFormat
-{
-   HKPF_XML,
-   HKPF_DEFAULT,
-   HKPF_WIN32,
-   HKPF_AMD64,
-   HKPF_XBOX,
-   HKPF_XBOX360,
-};
-
-static hkPackfileWriter::Options GetWriteOptionsFromFormat(hkPackFormat format)
-{
-   hkPackfileWriter::Options options;
-   options.m_layout = hkStructureLayout::MsvcWin32LayoutRules;
-
-   switch(format)
-   {
-   case HKPF_XML:
-   case HKPF_DEFAULT:
-   case HKPF_WIN32:
-      options.m_layout = hkStructureLayout::MsvcWin32LayoutRules;
-      break;
-   case HKPF_AMD64:
-      options.m_layout = hkStructureLayout::MsvcAmd64LayoutRules;
-      break;
-   case HKPF_XBOX:
-      options.m_layout = hkStructureLayout::MsvcXboxLayoutRules;
-      break;
-   case HKPF_XBOX360:
-      options.m_layout = hkStructureLayout::Xbox360LayoutRules;
-      break;
-   }
-   return options;
-}
-static void HK_CALL errorReport(const char* msg, void* userContext)
-{
-	Log::Error("%s", msg);
-}
-
 static bool ExecuteCmd(hkxcmdLine &cmdLine)
 {
 	string outpath;
@@ -819,20 +593,6 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 
 			switch (tolower(arg[1]))
 			{
-			case 'f':
-				{
-					const char *param = arg+2;
-					if (*param == ':' || *param=='=') ++param;
-					argv[i] = NULL;
-					if ( param[0] == 0 && ( i+1<argc && ( argv[i+1][0] != '-' || argv[i+1][0] != '/' ) ) ) {
-						param = argv[++i];
-						argv[i] = NULL;
-					}
-					if ( param[0] == 0 )
-						break;
-					flags = (hkSerializeUtil::SaveOptionBits)StringToFlags(param, SaveFlags, hkSerializeUtil::SAVE_DEFAULT);
-				} break;
-
 			case 'd':
 				{
 					const char *param = arg+2;

@@ -71,7 +71,6 @@
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\vendor\Havok\hk2010_2_0_r1\Lib\win32_net_9-0\debug_multithreaded&quot;;&quot;$(ProjectDir)..\niflib\lib&quot;"
 				IgnoreDefaultLibraryNames=""
-				ModuleDefinitionFile="hkxcore.h"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				RandomizedBaseAddress="1"
@@ -130,9 +129,10 @@
 				PreprocessorDefinitions="WIN32;_WIN32_WINNT=0x500;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;USE_NIFLIB_TEMPLATE_HELPERS;NIFLIB_STATIC_LINK"
 				RuntimeLibrary="0"
 				ForceConformanceInForLoopScope="false"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				DebugInformationFormat="3"
+				CompileAs="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -147,7 +147,6 @@
 				Name="VCLinkerTool"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\vendor\Havok\hk2010_2_0_r1\Lib\win32_net_9-0\release_multithreaded&quot;;&quot;$(ProjectDir)..\niflib\lib&quot;"
-				ModuleDefinitionFile="hkxcore.h"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -189,7 +188,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\hkclsnam.cpp"
+				RelativePath=".\Core\hkclsnam.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Core\hkfutils.cpp"
 				>
 			</File>
 			<File
@@ -217,30 +220,6 @@
 			<File
 				RelativePath=".\Core\hkxcore.cpp"
 				>
-			</File>
-			<File
-				RelativePath=".\hkxpch.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-						PrecompiledHeaderThrough="hkxpch.h"
-						PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-						PrecompiledHeaderThrough="hkxpch.h"
-						PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\hkxpch.h"
@@ -294,6 +273,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
 						ObjectFile="$(IntDir)\$(InputName)1.obj"
 						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
 					/>
@@ -462,6 +442,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Core\hkfutils.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Core\hkxcmd.h"
 				>
 			</File>
@@ -470,7 +454,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\hkxcore.h"
+				RelativePath=".\Core\hkxcore.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Core\hkxpch.h"
 				>
 			</File>
 			<File
@@ -504,6 +492,14 @@
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\zlib\compress.c"
@@ -516,12 +512,28 @@
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\zlib\crc32.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -544,6 +556,14 @@
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\zlib\deflate.h"
@@ -554,6 +574,14 @@
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -572,12 +600,28 @@
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\zlib\inffast.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -604,6 +648,14 @@
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\zlib\inflate.h"
@@ -614,6 +666,14 @@
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -636,6 +696,14 @@
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\zlib\trees.h"
@@ -646,6 +714,14 @@
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -666,6 +742,14 @@
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -1644,9 +1728,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1654,10 +1735,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -1669,9 +1747,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1679,10 +1754,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -1694,9 +1766,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1704,10 +1773,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -1719,9 +1785,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1729,10 +1792,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -1744,9 +1804,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1754,10 +1811,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -1769,9 +1823,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1779,10 +1830,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -1794,9 +1842,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1804,10 +1849,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -1819,9 +1861,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1829,10 +1868,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -1844,9 +1880,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1854,10 +1887,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -1869,9 +1899,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1879,10 +1906,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -1894,9 +1918,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1904,10 +1925,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -1919,9 +1937,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1929,10 +1944,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -1944,9 +1956,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1954,10 +1963,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -1969,9 +1975,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1979,10 +1982,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -1994,9 +1994,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2004,10 +2001,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2019,9 +2013,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2029,10 +2020,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2044,9 +2032,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2054,10 +2039,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2069,9 +2051,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2079,10 +2058,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2094,9 +2070,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2104,10 +2077,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2119,9 +2089,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2129,10 +2096,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2144,9 +2108,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2154,10 +2115,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2169,9 +2127,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2179,10 +2134,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2194,9 +2146,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2204,10 +2153,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2223,9 +2169,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2233,10 +2176,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2248,9 +2188,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2258,10 +2195,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2273,9 +2207,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2283,10 +2214,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2298,9 +2226,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2308,10 +2233,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2323,9 +2245,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2333,10 +2252,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2348,9 +2264,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2358,10 +2271,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2373,9 +2283,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2383,10 +2290,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2398,9 +2302,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2408,10 +2309,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2423,9 +2321,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2433,10 +2328,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2448,9 +2340,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2458,10 +2347,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2473,9 +2359,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2483,10 +2366,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2498,9 +2378,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2508,10 +2385,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2523,9 +2397,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2533,10 +2404,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2548,9 +2416,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2558,10 +2423,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2573,9 +2435,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2583,10 +2442,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2598,9 +2454,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2608,10 +2461,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2623,9 +2473,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2633,10 +2480,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2648,9 +2492,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2658,10 +2499,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2673,9 +2511,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2683,10 +2518,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2698,9 +2530,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2708,10 +2537,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2723,9 +2549,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2733,10 +2556,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2748,9 +2568,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2758,10 +2575,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2773,9 +2587,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2783,10 +2594,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2798,9 +2606,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2808,10 +2613,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2823,9 +2625,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2833,10 +2632,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2848,9 +2644,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2858,10 +2651,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2873,9 +2663,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2883,10 +2670,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2898,9 +2682,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2908,10 +2689,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2923,9 +2701,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2933,10 +2708,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2948,9 +2720,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2958,10 +2727,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2973,9 +2739,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -2983,10 +2746,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2998,9 +2758,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3008,10 +2765,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3023,9 +2777,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3033,10 +2784,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3048,9 +2796,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3058,10 +2803,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3073,9 +2815,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3083,10 +2822,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3098,9 +2834,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3108,10 +2841,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3123,9 +2853,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3133,10 +2860,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3148,9 +2872,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3158,10 +2879,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3173,9 +2891,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3183,10 +2898,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3198,9 +2910,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3208,10 +2917,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3223,9 +2929,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3233,10 +2936,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3248,9 +2948,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3258,10 +2955,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3273,9 +2967,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3283,10 +2974,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3298,9 +2986,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3308,10 +2993,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3323,9 +3005,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3333,10 +3012,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3348,9 +3024,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3358,10 +3031,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3373,9 +3043,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3383,10 +3050,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3398,9 +3062,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3408,10 +3069,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3423,9 +3081,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3433,10 +3088,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3448,9 +3100,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3458,10 +3107,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3473,9 +3119,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3483,10 +3126,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3498,9 +3138,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3508,10 +3145,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3523,9 +3157,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3533,10 +3164,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3548,9 +3176,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3558,10 +3183,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3573,9 +3195,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3583,10 +3202,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3598,9 +3214,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3608,10 +3221,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3623,9 +3233,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3633,10 +3240,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3648,9 +3252,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3658,10 +3259,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3673,9 +3271,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3683,10 +3278,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3698,9 +3290,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3708,10 +3297,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3723,9 +3309,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3733,10 +3316,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3748,9 +3328,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3758,10 +3335,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3773,9 +3347,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3783,10 +3354,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3798,9 +3366,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3808,10 +3373,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3823,9 +3385,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3833,10 +3392,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3848,9 +3404,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3858,10 +3411,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3873,9 +3423,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3883,10 +3430,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3898,9 +3442,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3908,10 +3449,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3923,9 +3461,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3933,10 +3468,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3948,9 +3480,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3958,10 +3487,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3973,9 +3499,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -3983,10 +3506,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3998,9 +3518,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4008,10 +3525,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4023,9 +3537,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4033,10 +3544,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4048,9 +3556,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4058,10 +3563,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4073,9 +3575,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4083,10 +3582,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4098,9 +3594,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4108,10 +3601,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4123,9 +3613,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4133,10 +3620,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4148,9 +3632,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4158,10 +3639,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4173,9 +3651,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4183,10 +3658,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4198,9 +3670,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4208,10 +3677,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4223,9 +3689,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4233,10 +3696,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4248,9 +3708,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4258,10 +3715,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4273,9 +3727,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4283,10 +3734,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4298,9 +3746,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4308,10 +3753,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4323,9 +3765,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4333,10 +3772,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4348,9 +3784,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4358,10 +3791,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4373,9 +3803,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4383,10 +3810,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4398,9 +3822,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4408,10 +3829,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4423,9 +3841,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4433,10 +3848,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4448,9 +3860,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4458,10 +3867,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4473,9 +3879,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4483,10 +3886,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4498,9 +3898,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4508,10 +3905,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4523,9 +3917,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4533,10 +3924,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4548,9 +3936,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4558,10 +3943,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4573,9 +3955,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4583,10 +3962,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4598,9 +3974,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4608,10 +3981,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4623,9 +3993,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4633,10 +4000,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4648,9 +4012,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4658,10 +4019,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4673,9 +4031,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4683,10 +4038,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4698,9 +4050,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4708,10 +4057,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4723,9 +4069,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4733,10 +4076,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4748,9 +4088,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4758,10 +4095,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4773,9 +4107,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4783,10 +4114,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4798,9 +4126,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4808,10 +4133,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4823,9 +4145,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4833,10 +4152,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4848,9 +4164,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4858,10 +4171,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4873,9 +4183,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4883,10 +4190,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4898,9 +4202,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4908,10 +4209,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4923,9 +4221,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4933,10 +4228,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4948,9 +4240,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4958,10 +4247,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4973,9 +4259,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -4983,10 +4266,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -4998,9 +4278,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5008,10 +4285,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5023,9 +4297,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5033,10 +4304,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5048,9 +4316,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5058,10 +4323,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5073,9 +4335,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5083,10 +4342,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5102,9 +4358,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5112,10 +4365,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5127,9 +4377,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5137,10 +4384,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5152,9 +4396,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5162,10 +4403,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5177,9 +4415,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5187,10 +4422,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5202,9 +4434,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5212,10 +4441,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5227,9 +4453,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5237,10 +4460,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5252,9 +4472,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5262,10 +4479,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5277,9 +4491,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5287,10 +4498,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5302,9 +4510,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5312,10 +4517,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5327,9 +4529,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5337,10 +4536,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5352,9 +4548,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5362,10 +4555,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5377,9 +4567,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5387,10 +4574,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5402,9 +4586,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5412,10 +4593,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5427,9 +4605,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5437,10 +4612,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5452,9 +4624,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5462,10 +4631,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5477,9 +4643,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5487,10 +4650,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5502,9 +4662,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5512,10 +4669,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5527,9 +4681,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5537,10 +4688,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5552,9 +4700,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5562,10 +4707,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5577,9 +4719,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5587,10 +4726,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5602,9 +4738,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5612,10 +4745,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5627,9 +4757,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5637,10 +4764,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5652,9 +4776,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5662,10 +4783,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5677,9 +4795,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5687,10 +4802,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5702,9 +4814,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5712,10 +4821,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5727,9 +4833,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5737,10 +4840,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5752,9 +4852,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5762,10 +4859,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5777,9 +4871,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5787,10 +4878,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5802,9 +4890,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5812,10 +4897,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5827,9 +4909,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5837,10 +4916,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5852,9 +4928,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5862,10 +4935,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5877,9 +4947,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5887,10 +4954,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5902,9 +4966,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5912,10 +4973,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5927,9 +4985,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5937,10 +4992,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5952,9 +5004,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5962,10 +5011,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -5977,9 +5023,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -5987,10 +5030,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6002,9 +5042,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6012,10 +5049,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6027,9 +5061,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6037,10 +5068,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6052,9 +5080,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6062,10 +5087,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6077,9 +5099,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6087,10 +5106,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6102,9 +5118,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6112,10 +5125,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6127,9 +5137,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6137,10 +5144,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6152,9 +5156,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6162,10 +5163,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6177,9 +5175,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6187,10 +5182,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6202,9 +5194,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6212,10 +5201,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6227,9 +5213,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6237,10 +5220,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6252,9 +5232,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6262,10 +5239,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6277,9 +5251,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6287,10 +5258,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6302,9 +5270,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6312,10 +5277,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6327,9 +5289,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6337,10 +5296,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6352,9 +5308,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6362,10 +5315,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6377,9 +5327,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6387,10 +5334,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6402,9 +5346,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6412,10 +5353,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6427,9 +5365,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6437,10 +5372,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6452,9 +5384,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6462,10 +5391,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6477,9 +5403,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6487,10 +5410,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6502,9 +5422,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6512,10 +5429,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6527,9 +5441,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6537,10 +5448,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6552,9 +5460,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6562,10 +5467,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6577,9 +5479,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6587,10 +5486,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6602,9 +5498,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6612,10 +5505,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6627,9 +5517,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6637,10 +5524,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6652,9 +5536,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6662,10 +5543,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6677,9 +5555,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6687,10 +5562,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6702,9 +5574,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6712,10 +5581,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6727,9 +5593,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6737,10 +5600,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6752,9 +5612,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6762,10 +5619,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6777,9 +5631,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6787,10 +5638,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6802,9 +5650,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6812,10 +5657,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6827,9 +5669,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6837,10 +5676,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6852,9 +5688,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6862,10 +5695,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6877,9 +5707,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6887,10 +5714,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6902,9 +5726,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6912,10 +5733,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6927,9 +5745,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6937,10 +5752,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6952,9 +5764,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6962,10 +5771,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -6977,9 +5783,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -6987,10 +5790,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -7002,9 +5802,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -7012,10 +5809,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -7027,9 +5821,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -7037,10 +5828,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -7052,9 +5840,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -7062,10 +5847,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -7077,9 +5859,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -7087,10 +5866,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -7102,9 +5878,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -7112,10 +5885,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -7127,9 +5897,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -7137,10 +5904,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -7152,9 +5916,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -7162,10 +5923,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -7177,9 +5935,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -7187,10 +5942,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -7202,9 +5954,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -7212,10 +5961,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -7227,9 +5973,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -7237,10 +5980,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -7252,9 +5992,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -7262,10 +5999,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -7277,9 +6011,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -7287,10 +6018,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -7302,9 +6030,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -7312,10 +6037,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -7327,9 +6049,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -7337,10 +6056,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -7352,9 +6068,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -7362,10 +6075,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>
@@ -7377,9 +6087,6 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -7387,10 +6094,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AdditionalOptions="/FI&quot;hkxpch.h&quot;"
 							UsePrecompiledHeader="2"
-							PrecompiledHeaderThrough="hkxpch.h"
-							PrecompiledHeaderFile="$(IntDir)\hkxpch.pch"
 						/>
 					</FileConfiguration>
 				</File>

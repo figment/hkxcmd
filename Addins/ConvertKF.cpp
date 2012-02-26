@@ -1,7 +1,9 @@
+#pragma region Headers
 #include "stdafx.h"
 
 #include "hkxcmd.h"
 #include "hkxutils.h"
+#include "hkfutils.h"
 #include "log.h"
 
 #include <map>
@@ -98,28 +100,7 @@ typedef Niflib::Key<string> StringKey;
 // Serialize
 #include <Common/Serialize/Util/hkSerializeUtil.h>
 
-#pragma comment (lib, "hkBase.lib")
-#pragma comment (lib, "hkSerialize.lib")
-#pragma comment (lib, "hkSceneData.lib")
-#pragma comment (lib, "hkInternal.lib")
-#pragma comment (lib, "hkGeometryUtilities.lib")
-#pragma comment (lib, "hkVisualize.lib")
-#pragma comment (lib, "hkCompat.lib")
-#pragma comment (lib, "hkpCollide.lib")
-#pragma comment (lib, "hkpConstraintSolver.lib")
-#pragma comment (lib, "hkpDynamics.lib")
-#pragma comment (lib, "hkpInternal.lib")
-#pragma comment (lib, "hkpUtilities.lib")
-#pragma comment (lib, "hkpVehicle.lib")
-#pragma comment (lib, "hkaAnimation.lib")
-#pragma comment (lib, "hkaRagdoll.lib")
-#pragma comment (lib, "hkaInternal.lib")
-#pragma comment (lib, "hkgBridge.lib")
-
-#define RETURN_FAIL_IF(COND, MSG) \
-	HK_MULTILINE_MACRO_BEGIN \
-	if(COND) { HK_ERROR(0x53a6a026, MSG); return 1; } \
-	HK_MULTILINE_MACRO_END
+#pragma endregion
 
 #pragma endregion
 
@@ -160,54 +141,6 @@ enum PosRotScale
 	prsScale = 0x4,
 	prsDefault = prsPos | prsRot | prsScale,
 };
-
-enum hkPackFormat
-{
-	HKPF_XML,
-	HKPF_DEFAULT,
-	HKPF_WIN32,
-	HKPF_AMD64,
-	HKPF_XBOX,
-	HKPF_XBOX360,
-};
-
-static 
-EnumLookupType SaveFlags[] = 
-{
-	{hkSerializeUtil::SAVE_DEFAULT,                   "SAVE_DEFAULT"},
-	{hkSerializeUtil::SAVE_TEXT_FORMAT,               "SAVE_TEXT_FORMAT"},
-	{hkSerializeUtil::SAVE_SERIALIZE_IGNORED_MEMBERS, "SAVE_SERIALIZE_IGNORED_MEMBERS"},
-	{hkSerializeUtil::SAVE_WRITE_ATTRIBUTES,          "SAVE_WRITE_ATTRIBUTES"},
-	{hkSerializeUtil::SAVE_CONCISE,                   "SAVE_CONCISE"},
-	{hkSerializeUtil::SAVE_TEXT_NUMBERS,              "SAVE_TEXT_NUMBERS"},
-	{0, NULL}
-};
-
-static 
-EnumLookupType LogFlags[] = 
-{
-	{LOG_NONE,   "NONE"},
-	{LOG_ALL,    "ALL"},
-	{LOG_VERBOSE,"VERBOSE"},
-	{LOG_DEBUG,  "DEBUG"},
-	{LOG_INFO,   "INFO"},
-	{LOG_WARN,   "WARN"},
-	{LOG_ERROR,  "ERROR"},
-	{0, NULL}
-};
-
-static 
-EnumLookupType PackFlags[] = 
-{
-	{HKPF_XML,   "XML"},
-	{HKPF_DEFAULT, "DEFAULT"},
-	{HKPF_WIN32, "WIN32"},
-	{HKPF_AMD64, "AMD64"},
-	{HKPF_XBOX,  "XBOX"},
-	{HKPF_XBOX360, "XBOX360"},
-	{0, NULL}
-};
-
 }
 //////////////////////////////////////////////////////////////////////////
 // Constants
@@ -225,48 +158,6 @@ const float FloatNegINF = *(float*)&IntegerNegInf;
 //////////////////////////////////////////////////////////////////////////
 // Helper functions
 //////////////////////////////////////////////////////////////////////////
-
-static hkResource* hkSerializeUtilLoad( hkStreamReader* stream
-								, hkSerializeUtil::ErrorDetails* detailsOut=HK_NULL
-								, const hkClassNameRegistry* classReg=HK_NULL
-								, hkSerializeUtil::LoadOptions options=hkSerializeUtil::LOAD_DEFAULT )
-{
-	__try
-	{
-		return hkSerializeUtil::load(stream, detailsOut, classReg, options);
-	}
-	__except (EXCEPTION_EXECUTE_HANDLER)
-	{
-		//if (detailsOut == NULL)
-		//	detailsOut->id = hkSerializeUtil::ErrorDetails::ERRORID_LOAD_FAILED;
-		return NULL;
-	}
-}
-
-static hkPackfileWriter::Options GetWriteOptionsFromFormat(hkPackFormat format)
-{
-	hkPackfileWriter::Options options;
-	options.m_layout = hkStructureLayout::MsvcWin32LayoutRules;
-
-	switch(format)
-	{
-	case HKPF_XML:
-	case HKPF_DEFAULT:
-	case HKPF_WIN32:
-		options.m_layout = hkStructureLayout::MsvcWin32LayoutRules;
-		break;
-	case HKPF_AMD64:
-		options.m_layout = hkStructureLayout::MsvcAmd64LayoutRules;
-		break;
-	case HKPF_XBOX:
-		options.m_layout = hkStructureLayout::MsvcXboxLayoutRules;
-		break;
-	case HKPF_XBOX360:
-		options.m_layout = hkStructureLayout::Xbox360LayoutRules;
-		break;
-	}
-	return options;
-}
 
 static void HelpString(hkxcmd::HelpType type){
 	switch (type)
@@ -289,23 +180,26 @@ static void HelpString(hkxcmd::HelpType type){
 			Log::Info("<Switches>" );
 			Log::Info(" -d[:level]     Debug Level: ERROR,WARN,INFO,DEBUG,VERBOSE (Default: INFO)" );
 			Log::Info("");
-			Log::Info(" -v:<flags>     Havok Packfile saving flags");
-			Log::Info("    DEFAULT     Save as Default Format (MSVC Win32 Packed)");
-			Log::Info("    XML         Save as Xml Format");
-			Log::Info("    WIN32       Save as Win32 Format");
-			Log::Info("    AMD64       Save as AMD64 Format");
-			Log::Info("    XBOX        Save as XBOX Format");
-			Log::Info("    XBOX360     Save as XBOX360 Format");
-			Log::Info("");
-			Log::Info(" -f:<flags>         Havok saving flags (Defaults:  SAVE_TEXT_FORMAT|SAVE_TEXT_NUMBERS)");
-			Log::Info("     SAVE_DEFAULT           = All flags default to OFF, enable whichever are needed");
-			Log::Info("     SAVE_TEXT_FORMAT       = Use text (usually XML) format, default is binary format if available.");
-			Log::Info("     SAVE_SERIALIZE_IGNORED_MEMBERS = Write members which are usually ignored.");
-			Log::Info("     SAVE_WRITE_ATTRIBUTES  = Include extended attributes in metadata, default is to write minimum metadata.");
-			Log::Info("     SAVE_CONCISE           = Doesn't provide any extra information which would make the file easier to interpret. ");
-			Log::Info("                              E.g. additionally write hex floats as text comments.");
-			Log::Info("     SAVE_TEXT_NUMBERS      = Floating point numbers output as text, not as binary.  ");
-			Log::Info("                              Makes them easily readable/editable, but values may not be exact.");
+         Log::Info(" -v:<flags>     Havok Save Options");
+         Log::Info("    DEFAULT     Save as Default Format (MSVC Win32 Packed)");
+         Log::Info("    XML         Save as Packed Binary Xml Format");
+         Log::Info("    WIN32       Save as Win32 Format");
+         Log::Info("    AMD64       Save as AMD64 Format");
+         Log::Info("    XBOX        Save as XBOX Format");
+         Log::Info("    XBOX360     Save as XBOX360 Format");
+         Log::Info("    TAGFILE     Save as TagFile Format");
+         Log::Info("    TAGXML      Save as TagFile XML Format");
+         Log::Info("");
+         Log::Info(" -f <flags>         Havok saving flags (Defaults:  SAVE_TEXT_FORMAT|SAVE_TEXT_NUMBERS)");
+         Log::Info("     SAVE_DEFAULT           = All flags default to OFF, enable whichever are needed");
+         Log::Info("     SAVE_TEXT_FORMAT       = Use text (usually XML) format, default is binary format if available.");
+         Log::Info("     SAVE_SERIALIZE_IGNORED_MEMBERS = Write members which are usually ignored.");
+         Log::Info("     SAVE_WRITE_ATTRIBUTES  = Include extended attributes in metadata, default is to write minimum metadata.");
+         Log::Info("     SAVE_CONCISE           = Doesn't provide any extra information which would make the file easier to interpret. ");
+         Log::Info("                              E.g. additionally write hex floats as text comments.");
+         Log::Info("     SAVE_TEXT_NUMBERS      = Floating point numbers output as text, not as binary.  ");
+         Log::Info("                              Makes them easily readable/editable, but values may not be exact.");
+         Log::Info("");
 			Log::Info(" -n             Disable recursive file processing" );
 			Log::Info("");
 		}
@@ -757,8 +651,11 @@ bool AnimationExport::exportController()
 	return true;
 }
 
-void ExportAnimations(const string& rootdir, const string& skelfile, const vector<string>& animlist, const string& outdir
-					  , const hkPackfileWriter::Options& packFileOptions, hkSerializeUtil::SaveOptionBits flags, bool norelativepath = false)
+static void ExportAnimations(const string& rootdir, const string& skelfile
+                      , const vector<string>& animlist, const string& outdir
+                      , hkPackFormat pkFormat, const hkPackfileWriter::Options& packFileOptions
+                      , hkSerializeUtil::SaveOptionBits flags
+                      , bool norelativepath = false)
 {
 	hkResource* skelResource = NULL;
 	hkResource* animResource = NULL;
@@ -769,11 +666,12 @@ void ExportAnimations(const string& rootdir, const string& skelfile, const vecto
 	{
 		hkIstream stream(skelfile.c_str());
 		hkStreamReader *reader = stream.getStreamReader();
-		hkSerializeUtil::FormatDetails detailsOut;
-		hkSerializeUtil::detectFormat( reader, detailsOut );
-		hkBool32 isLoadable = hkSerializeUtil::isLoadable( reader );
-		skelResource = hkSerializeUtilLoad(reader);
-		if (skelResource)
+      skelResource = hkSerializeLoadResource(reader);
+      if (skelResource == NULL)
+      {
+         Log::Warn("Skeleton File is not loadable: '%s'", skelfile);
+      }
+      else
 		{
 			const char * hktypename = skelResource->getContentsTypeName();
 			void * contentPtr = skelResource->getContentsPointer(HK_NULL, HK_NULL);
@@ -861,15 +759,8 @@ void ExportAnimations(const string& rootdir, const string& skelfile, const vecto
 						skelAnimCont->m_animations.pushBack(newBinding->m_animation);
 
 						hkOstream stream(outfile);
-						hkResult res;
-						if ((flags & hkSerializeUtil::SAVE_TEXT_FORMAT) == 0)
-						{
-							res = hkSerializeUtil::savePackfile(&rootCont, rootCont.staticClass(), stream.getStreamWriter(), packFileOptions, NULL, flags);
-						}
-						else
-						{
-							res = hkSerializeUtil::save( &rootCont, rootCont.staticClass(), stream.getStreamWriter(), flags );
-						}
+                  hkVariant root = { &rootCont, &rootCont.staticClass() };
+                  hkResult res = hkSerializeUtilSave(pkFormat, root, stream, flags, packFileOptions);
 						if ( res != HK_SUCCESS )
 						{
 							Log::Error("Havok reports save failed.");
@@ -890,7 +781,8 @@ void ExportAnimations(const string& rootdir, const string& skelfile, const vecto
 //////////////////////////////////////////////////////////////////////////
 
 static void ExportProject( const string &projfile, const char * rootPath, const char * outdir
-						  , const hkPackfileWriter::Options& packFileOptions, hkSerializeUtil::SaveOptionBits flags, bool recursion)
+                          , hkPackFormat pkFormat, const hkPackfileWriter::Options& packFileOptions
+                          , hkSerializeUtil::SaveOptionBits flags, bool recursion)
 {
 	vector<string> skelfiles, animfiles;
 	char projpath[MAX_PATH], skelpath[MAX_PATH], animpath[MAX_PATH];
@@ -929,11 +821,11 @@ static void ExportProject( const string &projfile, const char * rootPath, const 
 	}
 	else
 	{
-		ExportAnimations(string(rootPath), skelfiles[0],animfiles, outdir, packFileOptions, flags, false);
+		ExportAnimations(string(rootPath), skelfiles[0],animfiles, outdir, pkFormat, packFileOptions, flags, false);
 	}
 }
 
-static void HK_CALL errorReport(const char* msg, void* userContext)
+static void HK_CALL debugReport(const char* msg, void* userContext)
 {
 	Log::Debug("%s", msg);
 }
@@ -1065,14 +957,14 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 
 	hkMallocAllocator baseMalloc;
 	hkMemoryRouter* memoryRouter = hkMemoryInitUtil::initDefault( &baseMalloc, hkMemorySystem::FrameInfo(1024 * 1024) );
-	hkBaseSystem::init( memoryRouter, errorReport );
+	hkBaseSystem::init( memoryRouter, debugReport );
+	LoadDefaultRegistry();
 
-	if (pkFormat == HKPF_XML) // set text format to indicate xml
-	{
-		flags = (hkSerializeUtil::SaveOptionBits)(flags | hkSerializeUtil::SAVE_TEXT_FORMAT);
-	}
+   if (pkFormat == HKPF_XML || pkFormat == HKPF_TAGXML) // set text format to indicate xml
+   {
+      flags = (hkSerializeUtil::SaveOptionBits)(flags | hkSerializeUtil::SAVE_TEXT_FORMAT);
+   }
 	hkPackfileWriter::Options packFileOptions = GetWriteOptionsFromFormat(pkFormat);
-	
 
 	// search for projects and guess the layout
 	if (PathIsDirectory(paths[0].c_str()))
@@ -1118,7 +1010,7 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 		for (vector<string>::iterator itr = files.begin(); itr != files.end(); ++itr)
 		{
 			string projfile = (*itr).c_str();
-			ExportProject(projfile, rootPath, outdir, packFileOptions, flags, recursion);
+			ExportProject(projfile, rootPath, outdir, pkFormat, packFileOptions, flags, recursion);
 		}
 	}
 	else
@@ -1150,7 +1042,7 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 				} else { 
 					strcpy(outdir, rootPath); 
 				}
-				ExportProject(skelpath, rootPath, outdir, packFileOptions, flags, recursion);
+				ExportProject(skelpath, rootPath, outdir, pkFormat, packFileOptions, flags, recursion);
 			}
 		}
 		else
@@ -1181,7 +1073,7 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 						PathRemoveFileSpec(tempdir);
 						PathCombine(animDir, tempdir, "..\animations");
 						PathAddBackslash(animDir);
-						ExportProject(skelpath, rootPath, rootPath, packFileOptions, flags, recursion);
+						ExportProject(skelpath, rootPath, rootPath, pkFormat, packFileOptions, flags, recursion);
 					}
 					else if (paths.size() == 2) // second path will be output
 					{
@@ -1193,7 +1085,7 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 						PathCombine(rootPath,tempdir,"..\\animations");
 						GetFullPathName(rootPath, MAX_PATH, rootPath, NULL);
 						GetFullPathName(outdir, MAX_PATH, outdir, NULL);
-						ExportProject(skelpath, rootPath, outdir, packFileOptions, flags, recursion);
+						ExportProject(skelpath, rootPath, outdir, pkFormat, packFileOptions, flags, recursion);
 					}
 					else // second path is animation, third is output
 					{
@@ -1221,7 +1113,7 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 								strcpy(outdir, rootPath); 
 							}
 
-							ExportAnimations(string(rootPath), skelpath, animfiles, outdir, packFileOptions, flags, norelativepath);
+							ExportAnimations(string(rootPath), skelpath, animfiles, outdir, pkFormat, packFileOptions, flags, norelativepath);
 						}
 
 					}

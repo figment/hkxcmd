@@ -87,11 +87,12 @@ bool wildmatch(const stringlist& matches, const std::string& value)
 }
 
 // Tokenize a string using strtok and return it as a stringlist
-stringvector TokenizeString(LPCTSTR str, LPCTSTR delims)
+stringvector TokenizeString(LPCTSTR str, LPCTSTR delims, bool trim = true)
 {
    stringvector values;
    LPTSTR buf = STRDUPA(str);
    for (LPTSTR p = _tcstok(buf, delims); p && *p; p = _tcstok(NULL, delims)){
+      if (trim) Trim(p);
       values.push_back(string(p));
    }
    return values;
@@ -116,6 +117,17 @@ std::string FormatString(const TCHAR* format,...)
 	}
 	va_end(args);
 	return text;
+}
+
+string replaceSubstring(string instr, string match, string repl) {
+
+   string retval = instr;
+   for (int pos = retval.find(match, 0); pos != string::npos; pos = retval.find(match, 0)) 
+   {
+      retval.erase(pos, match.length());
+      retval.insert(pos, repl);
+   }
+   return retval;
 }
 
 // Enumeration Support
@@ -329,4 +341,92 @@ float roundf (float x)
   if (x >= 0.0F) { res = ceilf (x); if (res - x > 0.5F) res -= 1.0F; }
   else { res = ceilf (-x); if (res + x > 0.5F) res -= 1.0F; res = -res; }
   return res;
+}
+
+
+
+extern "C" void PrintV(FILE* hFile, LPCSTR lpszFormat, va_list argptr)
+{
+   vfprintf_s(hFile, lpszFormat, argptr);
+}
+
+extern "C" void PrintLineV(FILE* hFile, LPCSTR lpszFormat, va_list argptr)
+{
+   PrintV(hFile, lpszFormat, argptr);
+   fprintf_s(hFile, "\n");
+}
+
+extern "C" void PrintLine(FILE* hFile, LPCSTR lpszFormat, ...)
+{
+   va_list argList;
+   va_start(argList, lpszFormat);
+   PrintLineV(hFile, lpszFormat, argList);
+   va_end(argList);
+}
+
+extern "C" void Print(FILE* hFile, LPCSTR lpszFormat, ...)
+{
+   va_list argList;
+   va_start(argList, lpszFormat);
+   PrintV(hFile, lpszFormat, argList);
+   va_end(argList);
+}
+
+string GetFileVersion(const char *fileName)
+{
+   string retval;
+   char fileVersion[MAX_PATH];
+   if (fileName == NULL)
+   {
+      GetModuleFileName(NULL, fileVersion, MAX_PATH);
+      fileName = fileVersion;
+   }
+   HMODULE ver = GetModuleHandle("version.dll");
+   if (!ver) ver = LoadLibrary("version.dll");
+   if (ver != NULL)
+   {
+      DWORD (APIENTRY *GetFileVersionInfoSize)(LPCTSTR, LPDWORD) = NULL;
+      BOOL (APIENTRY *GetFileVersionInfo)(LPCTSTR, DWORD, DWORD, LPVOID) = NULL;
+      BOOL (APIENTRY *VerQueryValue)(const LPVOID, LPTSTR, LPVOID *, PUINT) = NULL;
+      *(FARPROC*)&GetFileVersionInfoSize = GetProcAddress(ver, "GetFileVersionInfoSizeA");
+      *(FARPROC*)&GetFileVersionInfo = GetProcAddress(ver, "GetFileVersionInfoA");
+      *(FARPROC*)&VerQueryValue = GetProcAddress(ver, "VerQueryValueA");
+      if (GetFileVersionInfoSize && GetFileVersionInfo && VerQueryValue)
+      {
+         DWORD vLen = 0;
+         DWORD vSize = GetFileVersionInfoSize(fileName,&vLen);
+         if (vSize) 
+         {
+            LPVOID versionInfo = malloc(vSize+1);
+            if (GetFileVersionInfo(fileName,vLen,vSize,versionInfo))
+            {            
+               LPVOID version=NULL;
+               if (VerQueryValue(versionInfo,"\\VarFileInfo\\Translation",&version,(UINT *)&vLen) && vLen==4) 
+               {
+                  DWORD langD = *(DWORD*)version;
+                  sprintf(fileVersion, "\\StringFileInfo\\%02X%02X%02X%02X\\ProductVersion",
+                     (langD & 0xff00)>>8,langD & 0xff,(langD & 0xff000000)>>24, (langD & 0xff0000)>>16);            
+               }
+               else 
+               {
+                  sprintf(fileVersion, "\\StringFileInfo\\%04X04B0\\ProductVersion", GetUserDefaultLangID());
+               }
+               LPCTSTR value = NULL;
+               if (VerQueryValue(versionInfo,fileVersion,&version,(UINT *)&vLen))
+                  value = LPCTSTR(version);
+               else if (VerQueryValue(versionInfo,"\\StringFileInfo\\040904B0\\ProductVersion",&version,(UINT *)&vLen))
+                  value = LPCTSTR(version);
+               if (value != NULL)
+               {
+                  stringvector val = TokenizeString(value, ",", true);
+                  if (val.size() >= 4){
+                     retval = FormatString("%s.%s.%s.%s", val[0].c_str(), val[1].c_str(), val[2].c_str(), val[3].c_str());
+                  }
+               }
+               free(versionInfo);
+            }
+         }
+      }
+   }
+   return retval;
 }

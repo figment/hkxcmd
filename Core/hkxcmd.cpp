@@ -133,7 +133,11 @@ void hkxcmd::PrintHelp()
    char fullName[MAX_PATH], exeName[MAX_PATH];
    GetModuleFileName(NULL, fullName, MAX_PATH);
    _splitpath(fullName, NULL, NULL, exeName, NULL);
-   Log::Info("%s built on %s", exeName, __TIMESTAMP__);
+
+   string version = GetFileVersion(fullName);
+
+
+   Log::Info("%s - Version %s", exeName, version.c_str());
    Log::Info("Usage: %s <command> [-opts[modifiers]]", exeName);
    Log::Info("");
    Log::Info("<Commands>");

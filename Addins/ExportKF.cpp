@@ -1,7 +1,9 @@
+#pragma region Headers
 #include "stdafx.h"
 
 #include "hkxcmd.h"
 #include "hkxutils.h"
+#include "hkfutils.h"
 #include "log.h"
 
 #include <direct.h>
@@ -88,30 +90,6 @@ typedef Niflib::Key<string> StringKey;
 
 // Serialize
 #include <Common/Serialize/Util/hkSerializeUtil.h>
-
-#pragma comment (lib, "hkBase.lib")
-#pragma comment (lib, "hkSerialize.lib")
-#pragma comment (lib, "hkSceneData.lib")
-#pragma comment (lib, "hkInternal.lib")
-#pragma comment (lib, "hkGeometryUtilities.lib")
-#pragma comment (lib, "hkVisualize.lib")
-#pragma comment (lib, "hkCompat.lib")
-#pragma comment (lib, "hkpCollide.lib")
-#pragma comment (lib, "hkpConstraintSolver.lib")
-#pragma comment (lib, "hkpDynamics.lib")
-#pragma comment (lib, "hkpInternal.lib")
-#pragma comment (lib, "hkpUtilities.lib")
-#pragma comment (lib, "hkpVehicle.lib")
-#pragma comment (lib, "hkaAnimation.lib")
-#pragma comment (lib, "hkaRagdoll.lib")
-#pragma comment (lib, "hkaInternal.lib")
-#pragma comment (lib, "hkgBridge.lib")
-
-#define RETURN_FAIL_IF(COND, MSG) \
-	HK_MULTILINE_MACRO_BEGIN \
-	if(COND) { HK_ERROR(0x53a6a026, MSG); return 1; } \
-	HK_MULTILINE_MACRO_END
-
 #pragma endregion
 
 //////////////////////////////////////////////////////////////////////////
@@ -122,6 +100,8 @@ typedef Niflib::Key<string> StringKey;
 #include <sys/stat.h>
 using namespace Niflib;
 using namespace std;
+
+#pragma endregion
 
 //////////////////////////////////////////////////////////////////////////
 // Enumeration Types
@@ -143,52 +123,6 @@ enum AccumType
 	AT_XYZ = AT_X | AT_Y | AT_Z,
 	AT_FORCE = 0x80000000,
 };
-enum hkPackFormat
-{
-	HKPF_XML,
-	HKPF_DEFAULT,
-	HKPF_WIN32,
-	HKPF_AMD64,
-	HKPF_XBOX,
-	HKPF_XBOX360,
-};
-
-static 
-EnumLookupType SaveFlags[] = 
-{
-	{hkSerializeUtil::SAVE_DEFAULT,                   "SAVE_DEFAULT"},
-	{hkSerializeUtil::SAVE_TEXT_FORMAT,               "SAVE_TEXT_FORMAT"},
-	{hkSerializeUtil::SAVE_SERIALIZE_IGNORED_MEMBERS, "SAVE_SERIALIZE_IGNORED_MEMBERS"},
-	{hkSerializeUtil::SAVE_WRITE_ATTRIBUTES,          "SAVE_WRITE_ATTRIBUTES"},
-	{hkSerializeUtil::SAVE_CONCISE,                   "SAVE_CONCISE"},
-	{hkSerializeUtil::SAVE_TEXT_NUMBERS,              "SAVE_TEXT_NUMBERS"},
-	{0, NULL}
-};
-
-static 
-EnumLookupType LogFlags[] = 
-{
-	{LOG_NONE,   "NONE"},
-	{LOG_ALL,    "ALL"},
-	{LOG_VERBOSE,"VERBOSE"},
-	{LOG_DEBUG,  "DEBUG"},
-	{LOG_INFO,   "INFO"},
-	{LOG_WARN,   "WARN"},
-	{LOG_ERROR,  "ERROR"},
-	{0, NULL}
-};
-
-static 
-EnumLookupType PackFlags[] = 
-{
-	{HKPF_XML,   "XML"},
-	{HKPF_DEFAULT, "DEFAULT"},
-	{HKPF_WIN32, "WIN32"},
-	{HKPF_AMD64, "AMD64"},
-	{HKPF_XBOX,  "XBOX"},
-	{HKPF_XBOX360, "XBOX360"},
-	{0, NULL}
-};
 
 }
 //////////////////////////////////////////////////////////////////////////
@@ -203,29 +137,9 @@ const float FloatNegINF = *(float*)&IntegerNegInf;
 // Structures
 //////////////////////////////////////////////////////////////////////////
 
-
 //////////////////////////////////////////////////////////////////////////
 // Helper functions
 //////////////////////////////////////////////////////////////////////////
-static hkResource* hkSerializeUtilLoad( hkStreamReader* stream
-								, hkSerializeUtil::ErrorDetails* detailsOut=HK_NULL
-								, const hkClassNameRegistry* classReg=HK_NULL
-								, hkSerializeUtil::LoadOptions options=hkSerializeUtil::LOAD_DEFAULT )
-{
-	__try
-	{
-		return hkSerializeUtil::load(stream, detailsOut, classReg, options);
-	}
-	__except (EXCEPTION_EXECUTE_HANDLER)
-	{
-		//if (detailsOut == NULL)
-		//	detailsOut->id = hkSerializeUtil::ErrorDetails::ERRORID_LOAD_FAILED;
-		return NULL;
-	}
-}
-
-
-
 
 //////////////////////////////////////////////////////////////////////////
 // Classes
@@ -236,9 +150,7 @@ struct AnimationExport
 	AnimationExport(NiControllerSequenceRef seq, hkRefPtr<hkaSkeleton> skeleton, hkRefPtr<hkaAnimationBinding> binding);
 
 	bool doExport();
-
 	bool exportNotes( );
-
 	bool exportController();
 
 	//bool SampleAnimation( INode * node, Interval &range, PosRotScale prs, NiKeyframeDataRef data );
@@ -558,10 +470,7 @@ void ExportAnimations(const string& rootdir, const string& skelfile, const vecto
 	{
 		hkIstream stream(skelfile.c_str());
 		hkStreamReader *reader = stream.getStreamReader();
-		hkSerializeUtil::FormatDetails detailsOut;
-		hkSerializeUtil::detectFormat( reader, detailsOut );
-		hkBool32 isLoadable = hkSerializeUtil::isLoadable( reader );
-		skelResource = hkSerializeUtilLoad(reader);
+      skelResource = hkSerializeLoadResource(reader);
 		if (skelResource)
 		{
 			const char * hktypename = skelResource->getContentsTypeName();
@@ -611,65 +520,62 @@ void ExportAnimations(const string& rootdir, const string& skelfile, const vecto
 
 			hkIstream stream(animfile.c_str());
 			hkStreamReader *reader = stream.getStreamReader();
-			hkSerializeUtil::FormatDetails detailsOut;
-			hkSerializeUtil::detectFormat( reader, detailsOut );
-			hkBool32 isLoadable = hkSerializeUtil::isLoadable( reader );
-			animResource = hkSerializeUtilLoad(reader);
+         animResource = hkSerializeLoadResource(reader);
+         if (animResource != NULL)
+         {
+			   const char * hktypename = animResource->getContentsTypeName();
+			   void * contentPtr = animResource->getContentsPointer(HK_NULL, HK_NULL);
+			   hkRootLevelContainer* scene = animResource->getContents<hkRootLevelContainer>();
+			   animCont = scene->findObject<hkaAnimationContainer>();
+			   if (animCont != NULL)
+			   {
+				   if (animCont != NULL)
+				   {
+					   int nbindings = animCont->m_bindings.getSize();
+					   if ( nbindings == 0)
+					   {
+						   Log::Error("Animation file contains no animation bindings.  Not exporting.");
+					   }
+					   else if ( nbindings != 1)
+					   {
+						   Log::Error("Animation file contains more than one animation binding.  Not exporting.");
+					   }
+					   else
+					   {
+						   for ( int i=0, n=animCont->m_bindings.getSize(); i<n; ++i)
+						   {
+							   char fname[MAX_PATH];
+							   _splitpath(animfile.c_str(), NULL, NULL, fname, NULL);
 
-			const char * hktypename = animResource->getContentsTypeName();
-			void * contentPtr = animResource->getContentsPointer(HK_NULL, HK_NULL);
-			hkRootLevelContainer* scene = animResource->getContents<hkRootLevelContainer>();
-			animCont = scene->findObject<hkaAnimationContainer>();
-			if (animCont != NULL)
-			{
-				if (animCont != NULL)
-				{
-					int nbindings = animCont->m_bindings.getSize();
-					if ( nbindings == 0)
-					{
-						Log::Error("Animation file contains no animation bindings.  Not exporting.");
-					}
-					else if ( nbindings != 1)
-					{
-						Log::Error("Animation file contains more than one animation binding.  Not exporting.");
-					}
-					else
-					{
-						for ( int i=0, n=animCont->m_bindings.getSize(); i<n; ++i)
-						{
-							char fname[MAX_PATH];
-							_splitpath(animfile.c_str(), NULL, NULL, fname, NULL);
+							   hkRefPtr<hkaAnimationBinding> binding = animCont->m_bindings[i];
+							   NiControllerSequenceRef seq = new NiControllerSequence();
+							   seq->SetName(fname);
 
-							hkRefPtr<hkaAnimationBinding> binding = animCont->m_bindings[i];
-							NiControllerSequenceRef seq = new NiControllerSequence();
-							seq->SetName(fname);
+							   Log::Verbose("ExportAnimation Exporting '%s'", outfile);
 
-							Log::Verbose("ExportAnimation Exporting '%s'", outfile);
+							   AnimationExport exporter(seq, skeleton, binding);
+							   if ( exporter.doExport() )
+							   {
+								   char outfiledir[MAX_PATH];
+								   strcpy(outfiledir, outfile);
+								   PathRemoveFileSpec(outfiledir);
+								   CreateDirectories(outfiledir);
 
-							AnimationExport exporter(seq, skeleton, binding);
-							if ( exporter.doExport() )
-							{
-								char outfiledir[MAX_PATH];
-								strcpy(outfiledir, outfile);
-								PathRemoveFileSpec(outfiledir);
-								CreateDirectories(outfiledir);
-
-								Log::Info("Exporting '%s'", relout);
-								Niflib::WriteNifTree(outfile, seq, nifver);
-							}
-							else
-							{
-								Log::Error("Export failed for '%s'", relout);
-							}
-						}
-					}
-				}
-			}
-			if (animResource) animResource->removeReference();
+								   Log::Info("Exporting '%s'", relout);
+								   Niflib::WriteNifTree(outfile, seq, nifver);
+							   }
+							   else
+							   {
+								   Log::Error("Export failed for '%s'", relout);
+							   }
+						   }
+					   }
+				   }
+			   }
+			   animResource->removeReference();
+         }
 		}
 	}
-
-
 	if (skelResource) skelResource->removeReference();
 }
 //////////////////////////////////////////////////////////////////////////
@@ -746,12 +652,6 @@ static void ExportProject( const string &projfile, const char * rootPath, const 
 		ExportAnimations(string(rootPath), skelfiles[0],animfiles, outdir, nifver, false);
 	}
 }
-
-static void HK_CALL errorReport(const char* msg, void* userContext)
-{
-	Log::Error("%s", msg);
-}
-
 
 static bool ExecuteCmd(hkxcmdLine &cmdLine)
 {

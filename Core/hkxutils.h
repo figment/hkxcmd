@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _WINDOWS_
 #  include <windows.h>
 #endif
@@ -121,6 +122,7 @@ extern bool wildmatch(const string& match, const std::string& value);
 extern bool wildmatch(const stringlist& matches, const std::string& value);
 
 extern std::string FormatString(const TCHAR* format,...);
+extern std::string replaceSubstring(std::string instr, std::string match, std::string repl);
 
 #pragma region Enumeration support
 // Enumeration support
@@ -145,3 +147,14 @@ void FindFiles(std::vector<string>& collection, const TCHAR *path, bool recursiv
 void CreateDirectories(LPCTSTR path);
 
 extern float roundf (float x);
+
+
+
+EXTERN_C
+{
+   void PrintV(FILE* hFile, LPCSTR lpszFormat, va_list argptr);
+   void PrintLineV(FILE* hFile, LPCSTR lpszFormat, va_list argptr);
+   void PrintLine(FILE* hFile, LPCSTR lpszFormat, ...);
+   void Print(FILE* hFile, LPCSTR lpszFormat, ...);
+}
+string GetFileVersion(const char *fileName);
