@@ -8,10 +8,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hkxcmd", "hkxcmd_VC90.vcpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Niflib", "..\niflib\niflib_VC2008.vcproj", "{19FD8EE6-79CC-4BAC-9744-D9573BE47C7E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hkxhook", "..\hkxhook\hkxhook.vcproj", "{0C19F856-D098-452E-82A8-A96373DA9C69}"
-EndProject
-Project("{8BC9CEB9-8B4A-11D0-8D11-00A0C91BC942}") = "AssetCc2.exe", "..\vendor\Havok\hk2010_2_0_r1\Tools\BatchProcess\AssetCc\AssetCc2.exe", "{A61CAC6C-B29F-41E2-84FD-BCA8A2ECE727}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - DLL|Win32 = Debug - DLL|Win32
@@ -68,36 +64,6 @@ Global
 		{19FD8EE6-79CC-4BAC-9744-D9573BE47C7E}.Release|Win32.ActiveCfg = Release - Static|Win32
 		{19FD8EE6-79CC-4BAC-9744-D9573BE47C7E}.Release|x64.ActiveCfg = Release - DLL|x64
 		{19FD8EE6-79CC-4BAC-9744-D9573BE47C7E}.Release|x64.Build.0 = Release - DLL|x64
-		{0C19F856-D098-452E-82A8-A96373DA9C69}.Debug - DLL|Win32.ActiveCfg = Debug|Win32
-		{0C19F856-D098-452E-82A8-A96373DA9C69}.Debug - DLL|Win32.Build.0 = Debug|Win32
-		{0C19F856-D098-452E-82A8-A96373DA9C69}.Debug - DLL|x64.ActiveCfg = Debug|Win32
-		{0C19F856-D098-452E-82A8-A96373DA9C69}.Debug - Static|Win32.ActiveCfg = Debug|Win32
-		{0C19F856-D098-452E-82A8-A96373DA9C69}.Debug - Static|Win32.Build.0 = Debug|Win32
-		{0C19F856-D098-452E-82A8-A96373DA9C69}.Debug - Static|x64.ActiveCfg = Debug|Win32
-		{0C19F856-D098-452E-82A8-A96373DA9C69}.Debug|Win32.ActiveCfg = Debug|Win32
-		{0C19F856-D098-452E-82A8-A96373DA9C69}.Debug|Win32.Build.0 = Debug|Win32
-		{0C19F856-D098-452E-82A8-A96373DA9C69}.Debug|x64.ActiveCfg = Debug|Win32
-		{0C19F856-D098-452E-82A8-A96373DA9C69}.Release - DLL|Win32.ActiveCfg = Release|Win32
-		{0C19F856-D098-452E-82A8-A96373DA9C69}.Release - DLL|Win32.Build.0 = Release|Win32
-		{0C19F856-D098-452E-82A8-A96373DA9C69}.Release - DLL|x64.ActiveCfg = Release|Win32
-		{0C19F856-D098-452E-82A8-A96373DA9C69}.Release - Static|Win32.ActiveCfg = Release|Win32
-		{0C19F856-D098-452E-82A8-A96373DA9C69}.Release - Static|Win32.Build.0 = Release|Win32
-		{0C19F856-D098-452E-82A8-A96373DA9C69}.Release - Static|x64.ActiveCfg = Release|Win32
-		{0C19F856-D098-452E-82A8-A96373DA9C69}.Release|Win32.ActiveCfg = Release|Win32
-		{0C19F856-D098-452E-82A8-A96373DA9C69}.Release|Win32.Build.0 = Release|Win32
-		{0C19F856-D098-452E-82A8-A96373DA9C69}.Release|x64.ActiveCfg = Release|Win32
-		{A61CAC6C-B29F-41E2-84FD-BCA8A2ECE727}.Debug - DLL|Win32.ActiveCfg = Debug
-		{A61CAC6C-B29F-41E2-84FD-BCA8A2ECE727}.Debug - DLL|x64.ActiveCfg = Debug
-		{A61CAC6C-B29F-41E2-84FD-BCA8A2ECE727}.Debug - Static|Win32.ActiveCfg = Debug
-		{A61CAC6C-B29F-41E2-84FD-BCA8A2ECE727}.Debug - Static|x64.ActiveCfg = Debug
-		{A61CAC6C-B29F-41E2-84FD-BCA8A2ECE727}.Debug|Win32.ActiveCfg = Debug
-		{A61CAC6C-B29F-41E2-84FD-BCA8A2ECE727}.Debug|x64.ActiveCfg = Debug
-		{A61CAC6C-B29F-41E2-84FD-BCA8A2ECE727}.Release - DLL|Win32.ActiveCfg = Debug
-		{A61CAC6C-B29F-41E2-84FD-BCA8A2ECE727}.Release - DLL|x64.ActiveCfg = Debug
-		{A61CAC6C-B29F-41E2-84FD-BCA8A2ECE727}.Release - Static|Win32.ActiveCfg = Debug
-		{A61CAC6C-B29F-41E2-84FD-BCA8A2ECE727}.Release - Static|x64.ActiveCfg = Debug
-		{A61CAC6C-B29F-41E2-84FD-BCA8A2ECE727}.Release|Win32.ActiveCfg = Debug
-		{A61CAC6C-B29F-41E2-84FD-BCA8A2ECE727}.Release|x64.ActiveCfg = Debug
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

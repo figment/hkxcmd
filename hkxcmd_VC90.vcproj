@@ -447,10 +447,6 @@
 				RelativePath=".\Addins\Report.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\Addins\Test.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

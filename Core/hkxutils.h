@@ -143,3 +143,5 @@ void FindFiles(std::vector<string>& collection, const TCHAR *path, stringlist&ex
 void FindFiles(std::vector<string>& collection, const TCHAR *path, bool recursive = true);
 
 void CreateDirectories(LPCTSTR path);
+
+extern float roundf (float x);

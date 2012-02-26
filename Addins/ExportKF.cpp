@@ -436,8 +436,10 @@ bool AnimationExport::exportController()
 		boneData.lastScale = interp->GetScale();
 	}
 
-	for (hkReal time = startTime; time<=anim->m_duration; time += incrFrame)
+   hkReal time = startTime;
+	for (int iFrame=0; iFrame<nframes; ++iFrame, time += incrFrame)
 	{
+
 		//hkUint32 uiAnnotations = anim->getNumAnnotations(time, incrFrame);
 		//hkUint32 nAnnotations = anim->getAnnotations(time, incrFrame, annotations.begin(), nbones);
 
