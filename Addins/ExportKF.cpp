@@ -84,6 +84,7 @@ typedef Niflib::Key<string> StringKey;
 #include <Animation/Ragdoll/Controller/PoweredConstraint/hkaRagdollPoweredConstraintController.h>
 #include <Animation/Ragdoll/Controller/RigidBody/hkaRagdollRigidBodyController.h>
 #include <Animation/Ragdoll/Utils/hkaRagdollUtils.h>
+#include <Animation/Animation/Rig/hkaSkeletonUtils.h>
 
 // Serialize
 #include <Common/Serialize/Util/hkSerializeUtil.h>
@@ -340,6 +341,9 @@ const float MY_FLT_EPSILON = 1e-5f;
 static inline bool EQUALS(float a, float b){
 	return fabs(a - b) < MY_FLT_EPSILON;
 }
+static inline bool EQUALS(float a, float b, float epsilon){
+   return fabs(a - b) < epsilon;
+}
 
 static inline bool EQUALS(const Niflib::Vector3& a, const Niflib::Vector3& b){
 	return (EQUALS(a.x,b.x) && EQUALS(a.y, b.y) && EQUALS(a.z, b.z) );
@@ -378,7 +382,7 @@ bool AnimationExport::exportController()
 	float duration = anim->m_duration;
 	seq->SetStopTime(duration);
 
-	hkReal incrFrame = anim->m_duration / (hkReal)nframes;
+	hkReal incrFrame = anim->m_duration / (hkReal)(nframes-1);
 
 	int nbones = skeleton->m_bones.getSize();
 
@@ -401,6 +405,9 @@ bool AnimationExport::exportController()
 
 	vector<BoneDataReference> dataList;
 	dataList.resize(numTracks);
+
+   vector<bool> scaleWarn;
+   scaleWarn.resize(numTracks);
 
 	NiObjectNETRef placeHolder = new NiObjectNET();
 	for (int i=0,n=numTracks; i<n; ++i)
@@ -435,6 +442,7 @@ bool AnimationExport::exportController()
 		//hkUint32 nAnnotations = anim->getAnnotations(time, incrFrame, annotations.begin(), nbones);
 
 		anim->samplePartialTracks(time, numTracks, transformOut.begin(), nfloats, floatsOut.begin(), HK_NULL);
+      hkaSkeletonUtils::normalizeRotations(transformOut.begin(), numTracks);
 
 		// assume 1-to-1 transforms
 		for (int i=0; i<numTracks; ++i)
@@ -461,8 +469,18 @@ bool AnimationExport::exportController()
 
 			FloatKey sk;
 			sk.time = time;
-			sk.data = Average(TOVECTOR3(transform.getScale()));
-			if (!EQUALS(data.lastScale,sk.data))
+         Niflib::Vector3 sc = TOVECTOR3(transform.getScale());
+         if (!EQUALS(sc.x,sc.y,0.01f) && !EQUALS(sc.x,sc.z,0.01f))
+         {
+            if (!scaleWarn[i])
+            {
+               scaleWarn[i] = true;
+               Log::Warn("Non-uniform scaling found while processing '%s'.", skeleton->m_bones[i].m_name.cString());
+            }
+         }
+            
+			sk.data = Average(sc);
+			if (!EQUALS(data.lastScale,sk.data,0.01f))
 			{
 				data.scale.push_back(sk);
 				data.lastScale = sk.data;
@@ -1040,5 +1058,13 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 
 	return true;
 }
+static bool SafeExecuteCmd(hkxcmdLine &cmdLine)
+{
+   __try{
+      return ExecuteCmd(cmdLine);
+   } __except (EXCEPTION_EXECUTE_HANDLER){
+      return false;
+   }
+}
 
-REGISTER_COMMAND(ExportKF, HelpString, ExecuteCmd);
+REGISTER_COMMAND(ExportKF, HelpString, SafeExecuteCmd);

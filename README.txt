@@ -1,4 +1,4 @@
-        Havok Command Line Tools 1.3
+        Havok Command Line Tools 1.4
         ============================
 
 This package includes a command line application for converting Havok models 
@@ -128,6 +128,10 @@ Known Issues:
   - There is no handling for visbility or camera tracks which seem to be used
     
 Change Log:
+  1.4
+   * Add support for Havok Behavior files and Bethesda specific classes
+   * Altered ExportKF to used frame_increment = duration / (nframe-1);
+   * Use a round function when calculated frames in ConvertKF
   1.3
    * Change ExportKF to add "start" and "end" note tracks on root node for later export
    * Added ConvertKF which takes a Gamebryo KF file and produces an HKX file

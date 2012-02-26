@@ -8,7 +8,7 @@
 #include <direct.h>
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <math.h>
 #pragma region Niflib Headers
 //////////////////////////////////////////////////////////////////////////
 // Niflib Includes
@@ -225,6 +225,22 @@ const float FloatNegINF = *(float*)&IntegerNegInf;
 //////////////////////////////////////////////////////////////////////////
 // Helper functions
 //////////////////////////////////////////////////////////////////////////
+
+/**
+ * This file has no copyright assigned and is placed in the Public Domain.
+ * This file is part of the w64 mingw-runtime package.
+ * No warranty is given; refer to the file DISCLAIMER within this package.
+ */
+#include <math.h>
+
+float roundf (float x)
+{
+  float res;
+  if (x >= 0.0F) { res = ceilf (x); if (res - x > 0.5F) res -= 1.0F; }
+  else { res = ceilf (-x); if (res + x > 0.5F) res -= 1.0F; res = -res; }
+  return res;
+}
+
 static hkResource* hkSerializeUtilLoad( hkStreamReader* stream
 								, hkSerializeUtil::ErrorDetails* detailsOut=HK_NULL
 								, const hkClassNameRegistry* classReg=HK_NULL
@@ -270,14 +286,14 @@ static hkPackfileWriter::Options GetWriteOptionsFromFormat(hkPackFormat format)
 static void HelpString(hkxcmd::HelpType type){
 	switch (type)
 	{
-	case hkxcmd::htShort: Log::Info("ExportKF - Convert Havok HKX animation to Gamebryo KF animation."); break;
+	case hkxcmd::htShort: Log::Info("ConvertKF - Convert Gamebryo KF animation to Havok HKX animation."); break;
 	case hkxcmd::htLong:  
 		{
 			char fullName[MAX_PATH], exeName[MAX_PATH];
 			GetModuleFileName(NULL, fullName, MAX_PATH);
 			_splitpath(fullName, NULL, NULL, exeName, NULL);
 
-			Log::Info("Usage: %s ExportKF [-opts[modifiers]] [skel.hkx] [anim.kf] [anim.hkx]", exeName); 
+			Log::Info("Usage: %s ConvertKF [-opts[modifiers]] [skel.hkx] [anim.kf] [anim.hkx]", exeName); 
 			Log::Info("  Convert Gamebryo KF animation to Havok HKX animation" );
 			Log::Info("  If a folder is specified then the folder will be searched for any projects and convert those." );
 			Log::Info("");
@@ -370,7 +386,9 @@ struct AnimationExport
 	NiControllerSequenceRef seq;
 	hkRefPtr<hkaAnimationBinding> binding;
 	hkRefPtr<hkaSkeleton> skeleton;
+   static bool noRootSiblings;
 };
+bool AnimationExport::noRootSiblings = true;
 }
 
 AnimationExport::AnimationExport(NiControllerSequenceRef seq, hkRefPtr<hkaSkeleton> skeleton, hkRefPtr<hkaAnimationBinding> binding)
@@ -598,22 +616,25 @@ bool AnimationExport::exportController()
 	vector<Niflib::ControllerLink> blocks = seq->GetControlledBlocks();
 	int nbones = skeleton->m_bones.getSize();
 
-	// Remove bones not children of root.  This is a bit of a kludge.  
-	//  Basically search for the first node after the root which also has no parent
-	//  This is typically Camera3. We then truncate racks to exclude nodes appearing after.
-	for (int i=1; i<nbones; ++i)
-	{
-		if (skeleton->m_parentIndices[i] < 0)
-		{
-			nbones = i;
-			break;
-		}
-	}
-
+   if (AnimationExport::noRootSiblings)
+   {
+	   // Remove bones not children of root.  This is a bit of a kludge.  
+	   //  Basically search for the first node after the root which also has no parent
+	   //  This is typically Camera3. We then truncate tracks to exclude nodes appearing after.
+	   for (int i=1; i<nbones; ++i)
+	   {
+		   if (skeleton->m_parentIndices[i] < 0)
+		   {
+			   nbones = i;
+			   break;
+		   }
+	   }
+   }
 	int numTracks = nbones;
 
 	float duration = seq->GetStopTime() - seq->GetStartTime();
-	int nframes = (int)ceil(duration / FramesIncrement);
+	int nframes = (int)roundf(duration / FramesIncrement);
+
 
 	int nCurrentFrame = 0;
 
@@ -941,6 +962,7 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 	char **argv = cmdLine.argv;
 	hkPackFormat pkFormat = HKPF_DEFAULT;
 	hkSerializeUtil::SaveOptionBits flags = hkSerializeUtil::SAVE_DEFAULT;
+   AnimationExport::noRootSiblings = true;
 
 #pragma region Handle Input Args
 	for (int i = 0; i < argc; i++)
@@ -970,6 +992,9 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 				recursion = false;
 				break;
 
+         case 's':
+            AnimationExport::noRootSiblings = false;
+            break;
 
 			case 'v':
 				{
@@ -1225,5 +1250,13 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 
 	return true;
 }
+static bool SafeExecuteCmd(hkxcmdLine &cmdLine)
+{
+   __try{
+      return ExecuteCmd(cmdLine);
+   } __except (EXCEPTION_EXECUTE_HANDLER){
+      return false;
+   }
+}
 
-REGISTER_COMMAND(ConvertKF, HelpString, ExecuteCmd);
+REGISTER_COMMAND(ConvertKF, HelpString, SafeExecuteCmd);

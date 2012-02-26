@@ -71,23 +71,23 @@ static void HelpString(hkxcmd::HelpType type){
 			GetModuleFileName(NULL, fullName, MAX_PATH);
 			_splitpath(fullName, NULL, NULL, exeName, NULL);
 			Log::Info("Usage: %s DumpList [-opts[modifiers]] [infile] [outfile]", exeName);
-				Log::Info("  Dump the transform or float list for a given skeleton.");
-				Log::Info("    This is useful when exporting animation to get bone list synchronized with source.");
-				Log::Info("");
-				Log::Info("<Switches>");
-				Log::Info(" -i <path>          Input File or directory");
-				Log::Info(" -o <path>          Output File - Defaults to input file with '-out' appended");
-				Log::Info("");
-				Log::Info(" -f <flags>         Havok saving flags (Defaults:  SAVE_TEXT_FORMAT|SAVE_TEXT_NUMBERS)");
-				Log::Info("     SAVE_DEFAULT           = All flags default to OFF, enable whichever are needed");
-				Log::Info("     SAVE_TEXT_FORMAT       = Use text (usually XML) format, default is binary format if available.");
-				Log::Info("     SAVE_SERIALIZE_IGNORED_MEMBERS = Write members which are usually ignored.");
-				Log::Info("     SAVE_WRITE_ATTRIBUTES  = Include extended attributes in metadata, default is to write minimum metadata.");
-				Log::Info("     SAVE_CONCISE           = Doesn't provide any extra information which would make the file easier to interpret. ");
-				Log::Info("                              E.g. additionally write hex floats as text comments.");
-				Log::Info("     SAVE_TEXT_NUMBERS      = Floating point numbers output as text, not as binary.  ");
-				Log::Info("                              Makes them easily readable/editable, but values may not be exact.");
-				Log::Info("");
+			Log::Info("  Dump the transform or float list for a given skeleton.");
+			Log::Info("    This is useful when exporting animation to get bone list synchronized with source.");
+			Log::Info("");
+			Log::Info("<Switches>");
+			Log::Info(" -i <path>          Input File or directory");
+			Log::Info(" -o <path>          Output File - Defaults to input file with '-out' appended");
+			Log::Info("");
+			Log::Info(" -f <flags>         Havok saving flags (Defaults:  SAVE_TEXT_FORMAT|SAVE_TEXT_NUMBERS)");
+			Log::Info("     SAVE_DEFAULT           = All flags default to OFF, enable whichever are needed");
+			Log::Info("     SAVE_TEXT_FORMAT       = Use text (usually XML) format, default is binary format if available.");
+			Log::Info("     SAVE_SERIALIZE_IGNORED_MEMBERS = Write members which are usually ignored.");
+			Log::Info("     SAVE_WRITE_ATTRIBUTES  = Include extended attributes in metadata, default is to write minimum metadata.");
+			Log::Info("     SAVE_CONCISE           = Doesn't provide any extra information which would make the file easier to interpret. ");
+			Log::Info("                              E.g. additionally write hex floats as text comments.");
+			Log::Info("     SAVE_TEXT_NUMBERS      = Floating point numbers output as text, not as binary.  ");
+			Log::Info("                              Makes them easily readable/editable, but values may not be exact.");
+			Log::Info("");
 				;
 		}
 		break;
@@ -387,6 +387,10 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 											sprintf(fname+strlen(fname), "-%d", iskel+1);
 											_makepath(path, drive, dir, fname, ext);
 										}
+										else
+										{
+											strcpy(path, outfile);
+										}
 
 										hkRefPtr<hkaSkeleton> skeleton = skelAnimCont->m_skeletons[0];
 										int nbones = skeleton->m_bones.getSize();
@@ -447,6 +451,14 @@ static bool ExecuteCmd(hkxcmdLine &cmdLine)
 
 	return true;
 }
+static bool SafeExecuteCmd(hkxcmdLine &cmdLine)
+{
+   __try{
+      return ExecuteCmd(cmdLine);
+   } __except (EXCEPTION_EXECUTE_HANDLER){
+      return false;
+   }
+}
 
-REGISTER_COMMAND(DumpList, HelpString, ExecuteCmd);
+REGISTER_COMMAND(DumpList, HelpString, SafeExecuteCmd);
 
