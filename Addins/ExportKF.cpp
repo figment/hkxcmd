@@ -294,8 +294,6 @@ bool AnimationExport::exportController()
 	float duration = anim->m_duration;
 	seq->SetStopTime(duration);
 
-	hkReal incrFrame = anim->m_duration / (hkReal)(nframes-1);
-
 	int nbones = skeleton->m_bones.getSize();
 
 	// dont know how to deal with this
@@ -349,7 +347,7 @@ bool AnimationExport::exportController()
 	}
 
    hkReal time = startTime;
-	for (int iFrame=0; iFrame<nframes; ++iFrame, time += incrFrame)
+	for (int iFrame=0; iFrame<nframes; ++iFrame, time = startTime + (hkReal)iFrame * anim->m_duration / (hkReal)(nframes-1))
 	{
 
 		//hkUint32 uiAnnotations = anim->getNumAnnotations(time, incrFrame);
